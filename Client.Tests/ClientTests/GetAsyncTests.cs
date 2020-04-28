@@ -18,16 +18,16 @@ namespace AzureDevOpsRest.Tests.ClientTests
         [Fact]
         public async Task PrivateProject_Authorized()
         {
-            var client = new Client(_config.Organization, _config.Token);
-            await client.GetAsync(new TestRequest($"/_apis/projects"));
+            var client = new Client(_config.Token);
+            await client.GetAsync(new TestRequest($"{_config.Organization}/_apis/projects"));
         }
         
         [Fact]
         public void PrivateProject_EnumerableRequest_Authorized()
         {
-            var client = new Client(_config.Organization, _config.Token);
+            var client = new Client(_config.Token);
             client
-                .GetAsync(new TestEnumerableRequest($"/_apis/projects"))
+                .GetAsync(new TestEnumerableRequest($"{_config.Organization}/_apis/projects"))
                 .ToEnumerable()
                 .Should()
                 .NotBeEmpty();
@@ -36,9 +36,9 @@ namespace AzureDevOpsRest.Tests.ClientTests
         [Fact]
         public async Task PrivateProject_WrongToken_Unauthorized()
         {
-            var client = new Client(_config.Organization, new string('x', 52));
+            var client = new Client(new string('x', 52));
             var ex = await client
-                .Invoking(x => x.GetAsync(new TestRequest($"/_apis/projects")))
+                .Invoking(x => x.GetAsync(new TestRequest($"{_config.Organization}/_apis/projects")))
                 .Should()
                 .ThrowAsync<FlurlHttpException>();
 
@@ -48,9 +48,9 @@ namespace AzureDevOpsRest.Tests.ClientTests
         [Fact]
         public async Task PrivateProject_NonAuthoritativeInformation_Unauthorized()
         {
-            var client = new Client(_config.Organization);
+            var client = new Client();
             var ex = await client
-                .Invoking(x => x.GetAsync(new TestRequest($"/_apis/projects")))
+                .Invoking(x => x.GetAsync(new TestRequest($"{_config.Organization}/_apis/projects")))
                 .Should()
                 .ThrowAsync<FlurlHttpException>();
 
@@ -60,21 +60,21 @@ namespace AzureDevOpsRest.Tests.ClientTests
         [Fact]
         public async Task PublicProject_EmptyToken()
         {
-            var client = new Client("manuel");
-            await client.GetAsync(new TestRequest($"packer-tasks/_apis/build/builds"));
+            var client = new Client();
+            await client.GetAsync(new TestRequest($"{_config.Organization}/packer-tasks/_apis/build/builds"));
         }
 
         [Fact]
         public static void RequestArgumentNull() =>
             FluentActions
-                .Invoking(() => new Client("manuel").GetAsync((IRequest<object>) null))
+                .Invoking(() => new Client().GetAsync((IRequest<object>) null))
                 .Should()
                 .Throw<ArgumentNullException>();
         
         [Fact]
         public static void EnumerableArgumentNull() =>
             FluentActions
-                .Invoking(() => new Client("manuel").GetAsync((IEnumerableRequest<object>) null))
+                .Invoking(() => new Client().GetAsync((IEnumerableRequest<object>) null))
                 .Should()
                 .Throw<ArgumentNullException>();
 

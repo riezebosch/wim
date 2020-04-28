@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
-using AzureDevOpsRest.Data;
 using AzureDevOpsRest.Data.WorkItems;
 using FluentAssertions;
 using Xunit;
@@ -12,12 +10,12 @@ namespace AzureDevOpsRest.Requests.Tests
     {
         private readonly Client _client;
 
-        public WorkItemTests(TestConfig config) => _client = new Client(config.Organization, config.Token);
+        public WorkItemTests(TestConfig config) => _client = new Client(config.Token);
 
         [Fact]
         public async Task Query()
         {
-            var result = await _client.PostAsync(WorkItems.Query(), new WorkItemQuery { Query = "Select [System.Id] FROM WorkItems" });
+            var result = await _client.PostAsync(WorkItems.Query("manuel"), new WorkItemQuery { Query = "Select [System.Id] FROM WorkItems" });
 
            result.WorkItems.Should().NotBeEmpty();
            result
@@ -31,10 +29,10 @@ namespace AzureDevOpsRest.Requests.Tests
         [Fact]
         public async Task Get()
         {
-            var result = await _client.PostAsync(WorkItems.Query(),
+            var result = await _client.PostAsync(WorkItems.Query("manuel"),
                 new WorkItemQuery {Query = "Select [System.Id] FROM WorkItems"});
 
-            var item = await _client.GetAsync(WorkItems.WorkItem(result.WorkItems.First().Id, "System.Id"));
+            var item = await _client.GetAsync(WorkItems.WorkItem("manuel", result.WorkItems.First().Id, "System.Id"));
 
             item
                 .Id

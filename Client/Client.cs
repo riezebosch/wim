@@ -10,16 +10,11 @@ namespace AzureDevOpsRest
 {
     public class Client : IClient
     {
-        private readonly string _organization;
         private readonly PersonalAccessToken _token;
 
-        public Client(string organization, PersonalAccessToken token)
-        {
-            _organization = organization;
-            _token = token;
-        }
+        public Client(PersonalAccessToken token) => _token = token;
 
-        public Client(string organization) : this(organization, PersonalAccessToken.Empty) 
+        public Client() : this(PersonalAccessToken.Empty) 
         {
         }
 
@@ -39,7 +34,7 @@ namespace AzureDevOpsRest
         }
 
         private IFlurlRequest Setup<TData>(IRequest<TData> request) =>
-            new Url(request.BaseUrl(_organization))
+            new Url(request.Url)
                 .AppendPathSegment(request.Resource)
                 .WithHeaders(request.Headers)
                 .SetQueryParams(request.QueryParams)

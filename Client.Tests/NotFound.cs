@@ -9,7 +9,7 @@ namespace AzureDevOpsRest.Tests
         [Fact]
         public async Task NotFound_ResultIsNull()
         {
-            var client = new Client("manuel", "");
+            var client = new Client("");
             var result = await client.GetAsync(new TestRequest($"packer-tasks/_apis/build/builds/451234"));
 
             result.Should().BeNull();

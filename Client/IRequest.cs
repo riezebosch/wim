@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace AzureDevOpsRest
@@ -7,6 +8,6 @@ namespace AzureDevOpsRest
         string Resource { get; }
         IDictionary<string, object> QueryParams { get; }
         IDictionary<string, object> Headers { get; }
-        string BaseUrl(string organization);
+        Uri Url { get; }
     }
 }

@@ -25,7 +25,7 @@ namespace MigrateWorkItems.Tests
         public async Task Test1()
         {
             var config = new TestConfig();
-            var client = new AzureDevOpsRest.Client(config.Organization, config.Token);
+            var client = new AzureDevOpsRest.Client(config.Token);
 
             var manuel = new
             {
@@ -78,7 +78,7 @@ namespace MigrateWorkItems.Tests
             _output.WriteLine(data);
             
                 var item = await client.PostAsync(
-                    new Request<WorkItem>("test/_apis/wit/workitems/$Epic", "5.1").WithQueryParams(("bypassRules", true)).WithHeaders(("Content-Type", "application/json-patch+json")), document);
+                    new Request<WorkItem>("manuel/test/_apis/wit/workitems/$Epic", "5.1").WithQueryParams(("bypassRules", true)).WithHeaders(("Content-Type", "application/json-patch+json")), document);
                 
                 // await client.PatchAsync(
                 //     new Request<WorkItem>($"test/_apis/wit/workitems/{item.Id}", "5.1").WithHeaders(("Content-Type", "application/json-patch+json")), document);
@@ -90,12 +90,12 @@ namespace MigrateWorkItems.Tests
         {
             const string project = "test";
             var config = new TestConfig();
-            var client = new Client(config.Organization, config.Token);
+            var client = new Client(config.Token);
 
             var json = File.ReadAllText(Path.Combine("items", "wi-updates.json"));
             var updates = JsonConvert.DeserializeObject<Multiple<WorkItemUpdate>>(json, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
 
-            var item = await CreateWorkItem(client, project, updates.Value.First());
+            var item = await CreateWorkItem(client, "manuel", project, updates.Value.First());
             await UpdateWorkItem(client, project, item, updates.Value.Skip(1));
         }
 
@@ -128,7 +128,8 @@ namespace MigrateWorkItems.Tests
 
         private static void RemoveReadOnlyField(WorkItemUpdate update, string field) => update.Fields.Remove(field);
 
-        private static async Task<Uri> CreateWorkItem(Client client, string project, WorkItemUpdate first)
+        private static async Task<Uri> CreateWorkItem(Client client, string organization, string project,
+            WorkItemUpdate first)
         {
             // May not be null but is in the updates work item updates API.
             first.Fields["System.AssignedTo"].NewValue ??= "";
@@ -141,7 +142,7 @@ namespace MigrateWorkItems.Tests
 
             var type = (string)first.Fields["System.WorkItemType"].NewValue;
             var item = await client.PostAsync(
-                new Request<WorkItem>($"{project}/_apis/wit/workitems/${type}", "5.1")
+                new Request<WorkItem>($"{organization}/{project}/_apis/wit/workitems/${type}", "5.1")
                     .WithQueryParams(("bypassRules", true))
                     .WithHeaders(("Content-Type", "application/json-patch+json")), document);
             
@@ -151,11 +152,9 @@ namespace MigrateWorkItems.Tests
 
     internal class UriRequest<TData> : Request<TData>
     {
-        private readonly Uri _item;
+        public UriRequest(Uri item, string version) : base(string.Empty, version) => Url = item;
 
-        public UriRequest(Uri item, string version) : base(string.Empty, version) => _item = item;
-
-        public override string BaseUrl(string organization) => _item.ToString();
+        public override Uri Url { get; }
     }
 
     public class WorkItemUpdate

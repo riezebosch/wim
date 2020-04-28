@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace AzureDevOpsRest.Requests
@@ -15,8 +16,8 @@ namespace AzureDevOpsRest.Requests
 
         public string Resource { get; }
 
-        public virtual string BaseUrl(string organization) =>  $"https://dev.azure.com/{organization}/";
-        
+        public virtual Uri Url => new Uri("https://dev.azure.com/");
+
         public IEnumerableRequest<TData> AsEnumerable() => new EnumerableRequest<TData>(this);
     }
 }

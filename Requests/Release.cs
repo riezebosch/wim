@@ -1,3 +1,4 @@
+using System;
 using AzureDevOpsRest.Data.Release;
 
 namespace AzureDevOpsRest.Requests
@@ -10,13 +11,13 @@ namespace AzureDevOpsRest.Requests
             {
             }
 
-            public override string BaseUrl(string organization) => $"https://vsrm.dev.azure.com/{organization}/";
+            public override Uri Url => new Uri("https://vsrm.dev.azure.com/");
         }
         
-        public static IRequest<Definition> Definition(string project, int id)
-            => new Request<Definition>($"{project}/_apis/release/definitions/{id}", "5.1");
+        public static IRequest<Definition> Definition(string organization, string project, int id)
+            => new Request<Definition>($"{organization}/{project}/_apis/release/definitions/{id}", "5.1");
 
-        public static IEnumerableRequest<Definition> Definitions(string project)
-            => new Request<Definition>($"{project}/_apis/release/definitions", "5.1").AsEnumerable();
+        public static IEnumerableRequest<Definition> Definitions(string organization, string project)
+            => new Request<Definition>($"{organization}/{project}/_apis/release/definitions", "5.1").AsEnumerable();
     }
 }
