@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace AzureDevOpsRest.Data.WorkItems
@@ -6,5 +7,6 @@ namespace AzureDevOpsRest.Data.WorkItems
     {
         public int Id { get; set; }
         public IDictionary<string, object> Fields { get; set; }
+        public Uri Url { get; set; }
     }
 }
