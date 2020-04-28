@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Flurl;
 using Flurl.Http;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace AzureDevOpsRest
 {
@@ -40,10 +41,14 @@ namespace AzureDevOpsRest
         private IFlurlRequest Setup<TData>(IRequest<TData> request) =>
             new Url(request.BaseUrl(_organization))
                 .AppendPathSegment(request.Resource)
+                .WithHeaders(request.Headers)
                 .SetQueryParams(request.QueryParams)
                 .WithBasicAuth(string.Empty, _token);
 
         public Task<TData> PostAsync<TData>(IRequest<TData> request, object data) =>
             Setup(request).PostJsonAsync(data).ReceiveJson<TData>();
+
+        public Task<TData> PatchAsync<TData>(IRequest<TData> request, JsonPatchDocument document) =>
+            Setup(request).PatchJsonAsync(document).ReceiveJson<TData>();
     }
 }

@@ -5,6 +5,8 @@ namespace AzureDevOpsRest.Requests
     public class Request<TData> : IRequest<TData>
     {
         public IDictionary<string, object> QueryParams { get; } = new Dictionary<string, object>();
+        public IDictionary<string, object> Headers { get; } = new Dictionary<string, object>();
+
         public Request(string resource, string version)
         {
             Resource = resource;

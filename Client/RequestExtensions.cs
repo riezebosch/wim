@@ -23,5 +23,16 @@ namespace AzureDevOpsRest
 
             return request;
         }
+        
+        public static IRequest<TData> WithHeaders<TData>(this IRequest<TData> request, params (string key, object value)[] items)
+        {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+            foreach (var (key, value) in items)
+            {
+                request.Headers[key] = value;
+            }
+
+            return request;
+        }
     }
 }

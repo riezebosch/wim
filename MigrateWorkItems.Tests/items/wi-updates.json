@@ -1,0 +1,221 @@
+{
+  "count": 2,
+  "value": [
+    {
+      "id": 1,
+      "workItemId": 2038,
+      "rev": 1,
+      "revisedBy": {
+        "id": "61111e88-4ba0-4a4a-98d4-474232ffb10b",
+        "name": "M. Riezebosch <mriezebosch@gmail.com>",
+        "displayName": "M. Riezebosch",
+        "url": "https://spsprodeus22.vssps.visualstudio.com/Ac00f72f0-b331-4ca5-8a23-19a7bd2f3c69/_apis/Identities/61111e88-4ba0-4a4a-98d4-474232ffb10b",
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+          }
+        },
+        "uniqueName": "mriezebosch@gmail.com",
+        "imageUrl": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky",
+        "descriptor": "msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+      },
+      "revisedDate": "2020-04-24T19:05:44.873Z",
+      "fields": {
+        "System.Id": {
+          "newValue": 2038
+        },
+        "System.AreaId": {
+          "newValue": 3071
+        },
+        "System.NodeName": {
+          "newValue": "test"
+        },
+        "System.AreaLevel1": {
+          "newValue": "test"
+        },
+        "System.Rev": {
+          "newValue": 1
+        },
+        "System.AuthorizedDate": {
+          "newValue": "2020-04-24T19:04:41.977Z"
+        },
+        "System.RevisedDate": {
+          "newValue": "2020-04-24T19:05:44.873Z"
+        },
+        "System.IterationId": {
+          "newValue": 3072
+        },
+        "System.IterationLevel1": {
+          "newValue": "test"
+        },
+        "System.IterationLevel2": {
+          "newValue": "Sprint 1"
+        },
+        "System.WorkItemType": {
+          "newValue": "Epic"
+        },
+        "System.State": {
+          "newValue": "New"
+        },
+        "System.Reason": {
+          "newValue": "New epic"
+        },
+        "System.AssignedTo": {},
+        "System.CreatedDate": {
+          "newValue": "2020-04-24T19:04:41.977Z"
+        },
+        "System.CreatedBy": {
+          "newValue": {
+            "displayName": "M. Riezebosch",
+            "url": "https://spsprodeus22.vssps.visualstudio.com/Ac00f72f0-b331-4ca5-8a23-19a7bd2f3c69/_apis/Identities/61111e88-4ba0-4a4a-98d4-474232ffb10b",
+            "_links": {
+              "avatar": {
+                "href": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+              }
+            },
+            "id": "61111e88-4ba0-4a4a-98d4-474232ffb10b",
+            "uniqueName": "mriezebosch@gmail.com",
+            "imageUrl": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky",
+            "descriptor": "msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+          }
+        },
+        "System.ChangedDate": {
+          "newValue": "2020-04-24T19:04:41.977Z"
+        },
+        "System.ChangedBy": {
+          "newValue": {
+            "displayName": "M. Riezebosch",
+            "url": "https://spsprodeus22.vssps.visualstudio.com/Ac00f72f0-b331-4ca5-8a23-19a7bd2f3c69/_apis/Identities/61111e88-4ba0-4a4a-98d4-474232ffb10b",
+            "_links": {
+              "avatar": {
+                "href": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+              }
+            },
+            "id": "61111e88-4ba0-4a4a-98d4-474232ffb10b",
+            "uniqueName": "mriezebosch@gmail.com",
+            "imageUrl": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky",
+            "descriptor": "msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+          }
+        },
+        "System.AuthorizedAs": {
+          "newValue": {
+            "displayName": "M. Riezebosch",
+            "url": "https://spsprodeus22.vssps.visualstudio.com/Ac00f72f0-b331-4ca5-8a23-19a7bd2f3c69/_apis/Identities/61111e88-4ba0-4a4a-98d4-474232ffb10b",
+            "_links": {
+              "avatar": {
+                "href": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+              }
+            },
+            "id": "61111e88-4ba0-4a4a-98d4-474232ffb10b",
+            "uniqueName": "mriezebosch@gmail.com",
+            "imageUrl": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky",
+            "descriptor": "msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+          }
+        },
+        "System.PersonId": {
+          "newValue": 10
+        },
+        "System.Watermark": {
+          "newValue": 7989
+        },
+        "System.IsDeleted": {
+          "newValue": false
+        },
+        "System.CommentCount": {
+          "newValue": 0
+        },
+        "System.TeamProject": {
+          "newValue": "test"
+        },
+        "System.AreaPath": {
+          "newValue": "test"
+        },
+        "System.IterationPath": {
+          "newValue": "test\\Sprint 1"
+        },
+        "System.Title": {
+          "newValue": "start as epic"
+        },
+        "Microsoft.VSTS.Common.StateChangeDate": {
+          "newValue": "2020-04-24T19:04:41.977Z"
+        },
+        "Microsoft.VSTS.Common.Priority": {
+          "newValue": 2
+        },
+        "Microsoft.VSTS.Common.ValueArea": {
+          "newValue": "Business"
+        }
+      },
+      "url": "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/2038/updates/1"
+    },
+    {
+      "id": 2,
+      "workItemId": 2038,
+      "rev": 2,
+      "revisedBy": {
+        "id": "61111e88-4ba0-4a4a-98d4-474232ffb10b",
+        "name": "M. Riezebosch <mriezebosch@gmail.com>",
+        "displayName": "M. Riezebosch",
+        "url": "https://spsprodeus22.vssps.visualstudio.com/Ac00f72f0-b331-4ca5-8a23-19a7bd2f3c69/_apis/Identities/61111e88-4ba0-4a4a-98d4-474232ffb10b",
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+          }
+        },
+        "uniqueName": "mriezebosch@gmail.com",
+        "imageUrl": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky",
+        "descriptor": "msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+      },
+      "revisedDate": "9999-01-01T00:00:00Z",
+      "fields": {
+        "System.Rev": {
+          "oldValue": 1,
+          "newValue": 2
+        },
+        "System.AuthorizedDate": {
+          "oldValue": "2020-04-24T19:04:41.977Z",
+          "newValue": "2020-04-24T19:05:44.873Z"
+        },
+        "System.RevisedDate": {
+          "oldValue": "2020-04-24T19:05:44.873Z",
+          "newValue": "9999-01-01T00:00:00Z"
+        },
+        "System.WorkItemType": {
+          "oldValue": "Epic",
+          "newValue": "Product Backlog Item"
+        },
+        "System.ChangedDate": {
+          "oldValue": "2020-04-24T19:04:41.977Z",
+          "newValue": "2020-04-24T19:05:44.873Z"
+        },
+        "System.Watermark": {
+          "oldValue": 7989,
+          "newValue": 7990
+        },
+        "System.CommentCount": {
+          "oldValue": 0,
+          "newValue": 1
+        },
+        "System.BoardColumn": {
+          "newValue": "New"
+        },
+        "System.BoardColumnDone": {
+          "newValue": false
+        },
+        "WEF_BE8875CA12F140109DFDBC966C5C5A9D_System.ExtensionMarker": {
+          "newValue": true
+        },
+        "WEF_BE8875CA12F140109DFDBC966C5C5A9D_Kanban.Column": {
+          "newValue": "New"
+        },
+        "WEF_BE8875CA12F140109DFDBC966C5C5A9D_Kanban.Column.Done": {
+          "newValue": false
+        },
+        "System.History": {
+          "newValue": "<div>now a PBI</div>"
+        }
+      },
+      "url": "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/2038/updates/2"
+    }
+  ]
+}

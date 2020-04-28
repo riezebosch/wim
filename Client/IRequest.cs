@@ -6,6 +6,7 @@ namespace AzureDevOpsRest
     {
         string Resource { get; }
         IDictionary<string, object> QueryParams { get; }
+        IDictionary<string, object> Headers { get; }
         string BaseUrl(string organization);
     }
 }

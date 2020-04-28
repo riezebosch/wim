@@ -8,6 +8,7 @@ namespace AzureDevOpsRest.Tests
 
         public string Resource { get; }
         public IDictionary<string, object> QueryParams { get; } = new Dictionary<string, object>();
+        public IDictionary<string, object> Headers { get; } = new Dictionary<string, object>();
         public string BaseUrl(string organization) => $"https://dev.azure.com/{organization}";
     }
 }
