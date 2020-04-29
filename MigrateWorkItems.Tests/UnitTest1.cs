@@ -9,6 +9,7 @@ using AzureDevOpsRest.Data.WorkItems;
 using AzureDevOpsRest.Requests;
 using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Xunit;
 using Xunit.Abstractions;
@@ -140,7 +141,7 @@ namespace MigrateWorkItems.Tests
                 document.Add($"fields/{key}", value.NewValue);
             }
 
-            var type = (string)first.Fields["System.WorkItemType"].NewValue;
+            var type = first.Fields["System.WorkItemType"].NewValue;
             var item = await client.PostAsync(
                 new Request<WorkItem>($"{organization}/{project}/_apis/wit/workitems/${type}", "5.1")
                     .WithQueryParams(("bypassRules", true))
@@ -148,13 +149,6 @@ namespace MigrateWorkItems.Tests
             
             return item.Url;
         }
-    }
-
-    internal class UriRequest<TData> : Request<TData>
-    {
-        public UriRequest(Uri item, string version) : base(string.Empty, version) => Url = item;
-
-        public override Uri Url { get; }
     }
 
     public class WorkItemUpdate

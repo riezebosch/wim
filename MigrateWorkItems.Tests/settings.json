@@ -1,4 +1,5 @@
 {
     "organization": "manuel",
+    "project": "test",
     "token": "put your PAT in settings.user.json"
 }
