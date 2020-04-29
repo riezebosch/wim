@@ -1,0 +1,147 @@
+{
+  "id": 1,
+  "workItemId": 2059,
+  "rev": 1,
+  "revisedBy": {
+    "id": "61111e88-4ba0-4a4a-98d4-474232ffb10b",
+    "name": "M. Riezebosch <mriezebosch@gmail.com>",
+    "displayName": "M. Riezebosch",
+    "url": "https://spsprodeus22.vssps.visualstudio.com/Ac00f72f0-b331-4ca5-8a23-19a7bd2f3c69/_apis/Identities/61111e88-4ba0-4a4a-98d4-474232ffb10b",
+    "_links": {
+      "avatar": {
+        "href": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+      }
+    },
+    "uniqueName": "mriezebosch@gmail.com",
+    "imageUrl": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky",
+    "descriptor": "msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+  },
+  "revisedDate": "2020-04-28T12:58:37.243Z",
+  "fields": {
+    "System.Id": {
+      "newValue": 2059
+    },
+    "System.AreaId": {
+      "newValue": 3071
+    },
+    "System.NodeName": {
+      "newValue": "test"
+    },
+    "System.AreaLevel1": {
+      "newValue": "test"
+    },
+    "System.Rev": {
+      "newValue": 1
+    },
+    "System.AuthorizedDate": {
+      "newValue": "2020-04-28T08:49:23.16Z"
+    },
+    "System.RevisedDate": {
+      "newValue": "2020-04-28T12:58:37.243Z"
+    },
+    "System.IterationId": {
+      "newValue": 3072
+    },
+    "System.IterationLevel1": {
+      "newValue": "test"
+    },
+    "System.IterationLevel2": {
+      "newValue": "Sprint 1"
+    },
+    "System.WorkItemType": {
+      "newValue": "Task"
+    },
+    "System.State": {
+      "newValue": "To Do"
+    },
+    "System.Reason": {
+      "newValue": "New task"
+    },
+    "System.AssignedTo": {},
+    "System.CreatedDate": {
+      "newValue": "2020-04-28T08:49:23.16Z"
+    },
+    "System.CreatedBy": {
+      "newValue": {
+        "displayName": "M. Riezebosch",
+        "url": "https://spsprodeus22.vssps.visualstudio.com/Ac00f72f0-b331-4ca5-8a23-19a7bd2f3c69/_apis/Identities/61111e88-4ba0-4a4a-98d4-474232ffb10b",
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+          }
+        },
+        "id": "61111e88-4ba0-4a4a-98d4-474232ffb10b",
+        "uniqueName": "mriezebosch@gmail.com",
+        "imageUrl": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky",
+        "descriptor": "msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+      }
+    },
+    "System.ChangedDate": {
+      "newValue": "2020-04-28T08:49:23.16Z"
+    },
+    "System.ChangedBy": {
+      "newValue": {
+        "displayName": "M. Riezebosch",
+        "url": "https://spsprodeus22.vssps.visualstudio.com/Ac00f72f0-b331-4ca5-8a23-19a7bd2f3c69/_apis/Identities/61111e88-4ba0-4a4a-98d4-474232ffb10b",
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+          }
+        },
+        "id": "61111e88-4ba0-4a4a-98d4-474232ffb10b",
+        "uniqueName": "mriezebosch@gmail.com",
+        "imageUrl": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky",
+        "descriptor": "msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+      }
+    },
+    "System.AuthorizedAs": {
+      "newValue": {
+        "displayName": "M. Riezebosch",
+        "url": "https://spsprodeus22.vssps.visualstudio.com/Ac00f72f0-b331-4ca5-8a23-19a7bd2f3c69/_apis/Identities/61111e88-4ba0-4a4a-98d4-474232ffb10b",
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+          }
+        },
+        "id": "61111e88-4ba0-4a4a-98d4-474232ffb10b",
+        "uniqueName": "mriezebosch@gmail.com",
+        "imageUrl": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky",
+        "descriptor": "msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+      }
+    },
+    "System.PersonId": {
+      "newValue": 10
+    },
+    "System.Watermark": {
+      "newValue": 8028
+    },
+    "System.IsDeleted": {
+      "newValue": false
+    },
+    "System.CommentCount": {
+      "newValue": 0
+    },
+    "System.TeamProject": {
+      "newValue": "test"
+    },
+    "System.AreaPath": {
+      "newValue": "test"
+    },
+    "System.IterationPath": {
+      "newValue": "test\\Sprint 1"
+    },
+    "System.Title": {
+      "newValue": "tas"
+    },
+    "Microsoft.VSTS.Common.StateChangeDate": {
+      "newValue": "2020-04-28T08:49:23.16Z"
+    },
+    "Microsoft.VSTS.Common.Priority": {
+      "newValue": 2
+    },
+    "System.Parent": {
+      "newValue": 2085
+    }
+  },
+  "url": "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/2059/updates/1"
+}

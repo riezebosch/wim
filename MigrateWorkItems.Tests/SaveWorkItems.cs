@@ -8,29 +8,22 @@ using AzureDevOpsRest.Data;
 using AzureDevOpsRest.Data.WorkItems;
 using AzureDevOpsRest.Requests;
 using Newtonsoft.Json.Linq;
-using Xunit;
 
 namespace MigrateWorkItems.Tests
 {
-    public class LoadAllWorkItems
+    internal static class SaveWorkItems
     {
-        [Fact]
-        public async Task Load()
+        public static async Task To(Client client, DirectoryInfo target, string organization, string project)
         {
-            var config = new TestConfig();
-            var client = new Client(config.Token);
-
-            var projectDir = Directory.CreateDirectory(config.Organization).CreateSubdirectory(config.Project);
             var tasks = new List<Task>();
-            
-            await foreach (var item in QueryAllWorkItems(client, config.Organization, config.Project))
+            await foreach (var item in QueryAllWorkItems(client, organization, project))
             {
-                tasks.Add(SaveUpdates(client, item, projectDir));
+                tasks.Add(SaveUpdates(client, item, target));
             }
 
             await Task.WhenAll(tasks);
         }
-
+        
         private static async Task SaveUpdates(Client client, WorkItemRef item, DirectoryInfo projectDir)
         {
             var itemDir = projectDir.CreateSubdirectory(item.Id.ToString());
