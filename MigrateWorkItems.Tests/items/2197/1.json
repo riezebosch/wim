@@ -1,6 +1,6 @@
 {
   "id": 1,
-  "workItemId": 2038,
+  "workItemId": 2197,
   "rev": 1,
   "revisedBy": {
     "id": "61111e88-4ba0-4a4a-98d4-474232ffb10b",
@@ -16,10 +16,10 @@
     "imageUrl": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky",
     "descriptor": "msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
   },
-  "revisedDate": "2020-04-24T19:05:44.873Z",
+  "revisedDate": "2020-04-29T20:35:13.443Z",
   "fields": {
     "System.Id": {
-      "newValue": 2038
+      "newValue": 2197
     },
     "System.AreaId": {
       "newValue": 3071
@@ -34,10 +34,10 @@
       "newValue": 1
     },
     "System.AuthorizedDate": {
-      "newValue": "2020-04-24T19:04:41.977Z"
+      "newValue": "2020-04-29T20:34:28.183Z"
     },
     "System.RevisedDate": {
-      "newValue": "2020-04-24T19:05:44.873Z"
+      "newValue": "2020-04-29T20:35:13.443Z"
     },
     "System.IterationId": {
       "newValue": 3072
@@ -49,17 +49,31 @@
       "newValue": "Sprint 1"
     },
     "System.WorkItemType": {
-      "newValue": "Epic"
+      "newValue": "Product Backlog Item"
     },
     "System.State": {
       "newValue": "New"
     },
     "System.Reason": {
-      "newValue": "New epic"
+      "newValue": "New backlog item"
     },
-    "System.AssignedTo": {},
+    "System.AssignedTo": {
+      "newValue": {
+        "displayName": "M. Riezebosch",
+        "url": "https://spsprodeus22.vssps.visualstudio.com/Ac00f72f0-b331-4ca5-8a23-19a7bd2f3c69/_apis/Identities/61111e88-4ba0-4a4a-98d4-474232ffb10b",
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+          }
+        },
+        "id": "61111e88-4ba0-4a4a-98d4-474232ffb10b",
+        "uniqueName": "mriezebosch@gmail.com",
+        "imageUrl": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky",
+        "descriptor": "msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+      }
+    },
     "System.CreatedDate": {
-      "newValue": "2020-04-24T19:04:41.977Z"
+      "newValue": "2020-04-29T20:34:28.183Z"
     },
     "System.CreatedBy": {
       "newValue": {
@@ -77,7 +91,7 @@
       }
     },
     "System.ChangedDate": {
-      "newValue": "2020-04-24T19:04:41.977Z"
+      "newValue": "2020-04-29T20:34:28.183Z"
     },
     "System.ChangedBy": {
       "newValue": {
@@ -113,7 +127,7 @@
       "newValue": 10
     },
     "System.Watermark": {
-      "newValue": 7989
+      "newValue": 8252
     },
     "System.IsDeleted": {
       "newValue": false
@@ -131,17 +145,32 @@
       "newValue": "test\\Sprint 1"
     },
     "System.Title": {
-      "newValue": "start as epic"
+      "newValue": "New PBI"
+    },
+    "System.BoardColumn": {
+      "newValue": "New"
+    },
+    "System.BoardColumnDone": {
+      "newValue": false
     },
     "Microsoft.VSTS.Common.StateChangeDate": {
-      "newValue": "2020-04-24T19:04:41.977Z"
+      "newValue": "2020-04-29T20:34:28.183Z"
     },
     "Microsoft.VSTS.Common.Priority": {
       "newValue": 2
     },
     "Microsoft.VSTS.Common.ValueArea": {
       "newValue": "Business"
+    },
+    "WEF_BE8875CA12F140109DFDBC966C5C5A9D_System.ExtensionMarker": {
+      "newValue": true
+    },
+    "WEF_BE8875CA12F140109DFDBC966C5C5A9D_Kanban.Column": {
+      "newValue": "New"
+    },
+    "WEF_BE8875CA12F140109DFDBC966C5C5A9D_Kanban.Column.Done": {
+      "newValue": false
     }
   },
-  "url": "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/2038/updates/1"
+  "url": "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/2197/updates/1"
 }

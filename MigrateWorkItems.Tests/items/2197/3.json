@@ -1,0 +1,60 @@
+{
+  "id": 3,
+  "workItemId": 2197,
+  "rev": 2,
+  "revisedBy": {
+    "id": "61111e88-4ba0-4a4a-98d4-474232ffb10b",
+    "name": "M. Riezebosch <mriezebosch@gmail.com>",
+    "displayName": "M. Riezebosch",
+    "url": "https://spsprodeus22.vssps.visualstudio.com/Ac00f72f0-b331-4ca5-8a23-19a7bd2f3c69/_apis/Identities/61111e88-4ba0-4a4a-98d4-474232ffb10b",
+    "_links": {
+      "avatar": {
+        "href": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+      }
+    },
+    "uniqueName": "mriezebosch@gmail.com",
+    "imageUrl": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky",
+    "descriptor": "msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+  },
+  "revisedDate": "2020-04-29T20:35:39.293Z",
+  "fields": {
+    "System.Rev": {
+      "oldValue": 1,
+      "newValue": 2
+    },
+    "System.AuthorizedDate": {
+      "oldValue": "2020-04-29T20:34:28.183Z",
+      "newValue": "2020-04-29T20:35:13.443Z"
+    },
+    "System.RevisedDate": {
+      "oldValue": "2020-04-29T20:35:13.443Z",
+      "newValue": "2020-04-29T20:35:39.293Z"
+    },
+    "System.ChangedDate": {
+      "oldValue": "2020-04-29T20:34:28.183Z",
+      "newValue": "2020-04-29T20:35:13.443Z"
+    },
+    "System.Watermark": {
+      "oldValue": 8252,
+      "newValue": 8254
+    }
+  },
+  "relations": {
+    "added": [
+      {
+        "rel": "ArtifactLink",
+        "url": "vstfs:///Git/Commit/eb082604-a70f-4977-9335-85f0da463818%2Fa5d81f51-d461-4cb2-baa7-e6fe52e193c2%2Ff4ef383ddb19d39815318df34bbcaf4ea88536e6",
+        "attributes": {
+          "authorizedDate": "2020-04-29T20:35:13.443Z",
+          "id": 2497749,
+          "resourceCreatedDate": "2020-04-29T20:35:13.443Z",
+          "resourceModifiedDate": "2020-04-29T20:35:13.443Z",
+          "revisedDate": "9999-01-01T00:00:00Z",
+          "comment": "linking work to the PBI",
+          "name": "Fixed in Commit"
+        }
+      }
+    ]
+  },
+  "url": "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/2197/updates/3"
+}

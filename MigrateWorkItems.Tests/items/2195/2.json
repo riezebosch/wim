@@ -1,6 +1,6 @@
 {
   "id": 2,
-  "workItemId": 2038,
+  "workItemId": 2195,
   "rev": 2,
   "revisedBy": {
     "id": "61111e88-4ba0-4a4a-98d4-474232ffb10b",
@@ -23,11 +23,11 @@
       "newValue": 2
     },
     "System.AuthorizedDate": {
-      "oldValue": "2020-04-24T19:04:41.977Z",
-      "newValue": "2020-04-24T19:05:44.873Z"
+      "oldValue": "2020-04-29T20:32:59.52Z",
+      "newValue": "2020-04-29T20:33:26.067Z"
     },
     "System.RevisedDate": {
-      "oldValue": "2020-04-24T19:05:44.873Z",
+      "oldValue": "2020-04-29T20:33:26.067Z",
       "newValue": "9999-01-01T00:00:00Z"
     },
     "System.WorkItemType": {
@@ -35,16 +35,20 @@
       "newValue": "Product Backlog Item"
     },
     "System.ChangedDate": {
-      "oldValue": "2020-04-24T19:04:41.977Z",
-      "newValue": "2020-04-24T19:05:44.873Z"
+      "oldValue": "2020-04-29T20:32:59.52Z",
+      "newValue": "2020-04-29T20:33:26.067Z"
     },
     "System.Watermark": {
-      "oldValue": 7989,
-      "newValue": 7990
+      "oldValue": 8249,
+      "newValue": 8250
     },
     "System.CommentCount": {
       "oldValue": 0,
       "newValue": 1
+    },
+    "System.Title": {
+      "oldValue": "Started as epic",
+      "newValue": "Started as epic but now a PBI"
     },
     "System.BoardColumn": {
       "newValue": "New"
@@ -62,8 +66,8 @@
       "newValue": false
     },
     "System.History": {
-      "newValue": "<div>now a PBI</div>"
+      "newValue": "<div>Now a PBI</div>"
     }
   },
-  "url": "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/2038/updates/2"
+  "url": "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/2195/updates/2"
 }

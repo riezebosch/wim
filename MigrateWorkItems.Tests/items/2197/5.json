@@ -1,0 +1,60 @@
+{
+  "id": 5,
+  "workItemId": 2197,
+  "rev": 4,
+  "revisedBy": {
+    "id": "61111e88-4ba0-4a4a-98d4-474232ffb10b",
+    "name": "M. Riezebosch <mriezebosch@gmail.com>",
+    "displayName": "M. Riezebosch",
+    "url": "https://spsprodeus22.vssps.visualstudio.com/Ac00f72f0-b331-4ca5-8a23-19a7bd2f3c69/_apis/Identities/61111e88-4ba0-4a4a-98d4-474232ffb10b",
+    "_links": {
+      "avatar": {
+        "href": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+      }
+    },
+    "uniqueName": "mriezebosch@gmail.com",
+    "imageUrl": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky",
+    "descriptor": "msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
+  },
+  "revisedDate": "9999-01-01T00:00:00Z",
+  "fields": {
+    "System.Rev": {
+      "oldValue": 3,
+      "newValue": 4
+    },
+    "System.AuthorizedDate": {
+      "oldValue": "2020-04-29T20:35:39.293Z",
+      "newValue": "2020-04-29T20:36:21.763Z"
+    },
+    "System.RevisedDate": {
+      "oldValue": "2020-04-29T20:36:21.763Z",
+      "newValue": "9999-01-01T00:00:00Z"
+    },
+    "System.ChangedDate": {
+      "oldValue": "2020-04-29T20:35:39.293Z",
+      "newValue": "2020-04-29T20:36:21.763Z"
+    },
+    "System.Watermark": {
+      "oldValue": 8255,
+      "newValue": 8256
+    }
+  },
+  "relations": {
+    "added": [
+      {
+        "rel": "AttachedFile",
+        "url": "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/attachments/1f70b0ee-13c9-4989-abd3-6668dc22cdf8",
+        "attributes": {
+          "authorizedDate": "2020-04-29T20:36:21.763Z",
+          "id": 2497751,
+          "resourceCreatedDate": "2020-04-29T20:36:19.027Z",
+          "resourceModifiedDate": "2020-02-07T17:57:23.913Z",
+          "revisedDate": "9999-01-01T00:00:00Z",
+          "resourceSize": 627281,
+          "name": "Trumpet Voluntary (1).pdf"
+        }
+      }
+    ]
+  },
+  "url": "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/2197/updates/5"
+}

@@ -1,7 +1,7 @@
 {
-  "id": 3,
-  "workItemId": 2038,
-  "rev": 2,
+  "id": 2,
+  "workItemId": 2197,
+  "rev": 1,
   "revisedBy": {
     "id": "61111e88-4ba0-4a4a-98d4-474232ffb10b",
     "name": "M. Riezebosch <mriezebosch@gmail.com>",
@@ -16,12 +16,12 @@
     "imageUrl": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky",
     "descriptor": "msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
   },
-  "revisedDate": "2020-04-28T08:49:44.167Z",
+  "revisedDate": "2020-04-29T20:34:39.853Z",
   "relations": {
     "added": [
       {
         "rel": "System.LinkTypes.Hierarchy-Forward",
-        "url": "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/2059",
+        "url": "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/2196",
         "attributes": {
           "isLocked": false,
           "name": "Child"
@@ -29,5 +29,5 @@
       }
     ]
   },
-  "url": "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/2038/updates/3"
+  "url": "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/2197/updates/2"
 }

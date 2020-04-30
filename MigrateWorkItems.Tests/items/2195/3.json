@@ -1,6 +1,6 @@
 {
-  "id": 4,
-  "workItemId": 2038,
+  "id": 3,
+  "workItemId": 2195,
   "rev": 2,
   "revisedBy": {
     "id": "61111e88-4ba0-4a4a-98d4-474232ffb10b",
@@ -16,18 +16,19 @@
     "imageUrl": "https://dev.azure.com/manuel/_apis/GraphProfile/MemberAvatars/msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky",
     "descriptor": "msa.ZTlkMTNhM2QtN2JjMC03YWY4LWIxNDItMjIwZjA2Yzc3Mjky"
   },
-  "revisedDate": "2020-04-28T12:58:36.757Z",
+  "revisedDate": "2020-04-29T20:34:00.69Z",
   "relations": {
-    "removed": [
+    "added": [
       {
         "rel": "System.LinkTypes.Hierarchy-Forward",
-        "url": "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/2059",
+        "url": "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/2196",
         "attributes": {
           "isLocked": false,
+          "comment": "just a comment on the new task",
           "name": "Child"
         }
       }
     ]
   },
-  "url": "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/2038/updates/4"
+  "url": "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/2195/updates/3"
 }

@@ -22,19 +22,13 @@ namespace MigrateWorkItems.Tests
                 new ReadOnlyFields()
             };
         }
-        
-        public async Task UpdateWorkItem(Client client, WorkItem item, IEnumerable<WorkItemUpdate> updates)
-        {
-            foreach (var update in updates)
-            {
-                await UpdateWorkItem(client, item.Url, update);
-            }
-        }
 
-        private async Task UpdateWorkItem(Client client, Uri item, WorkItemUpdate update)
+        public async Task UpdateWorkItem(Client client, Uri item, WorkItemUpdate update,
+            IDictionary<Uri, Uri> mapping)
         {
             var document = new JsonPatchDocument();
             UpdateFields(document, update);
+            await UpdateRelations(client, document, item, update, mapping);
 
             if (document.Operations.Any())
             {
@@ -43,6 +37,15 @@ namespace MigrateWorkItems.Tests
                         .WithQueryParams(("bypassRules", true))
                         .WithHeaders(("Content-Type", "application/json-patch+json")), document);
             }
+        }
+
+        private async Task UpdateRelations(Client client, JsonPatchDocument document, Uri uri, WorkItemUpdate update,
+            IDictionary<Uri, Uri> mapping)
+        {
+            var item = await client.GetAsync(
+                new UriRequest<WorkItem>(uri, "5.1").WithQueryParams(("$expand", "relations")));
+            
+            new RelationsProcessor().Execute(document, item, update, mapping);
         }
 
         private void UpdateFields(JsonPatchDocument document, WorkItemUpdate update)
@@ -78,7 +81,7 @@ namespace MigrateWorkItems.Tests
             var type = update.Fields["System.WorkItemType"].NewValue;
             var item = await client.PostAsync(
                 new Request<WorkItem>($"{organization}/{project}/_apis/wit/workitems/${type}", "5.1")
-                    .WithQueryParams(("bypassRules", true))
+                    .WithQueryParams(("bypassRules", true), ("$expand", "relations"))
                     .WithHeaders(("Content-Type", "application/json-patch+json")), document);
             
             return item;

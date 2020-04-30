@@ -8,5 +8,6 @@ namespace AzureDevOpsRest.Data.WorkItems
         public int Id { get; set; }
         public IDictionary<string, object> Fields { get; set; }
         public Uri Url { get; set; }
+        public Relation[] Relations { get; set; }
     }
 }
