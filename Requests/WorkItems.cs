@@ -1,5 +1,3 @@
-using System.Linq;
-using AzureDevOpsRest.Data;
 using AzureDevOpsRest.Data.WorkItems;
 
 namespace AzureDevOpsRest.Requests

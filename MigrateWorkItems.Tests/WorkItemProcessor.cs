@@ -18,17 +18,23 @@ namespace MigrateWorkItems.Tests
         public WorkItemProcessor(string project)
         {
             _processors = new IFieldsProcessor[] {
+                new NullProcessor(),
                 new ClassificationNodes(project),
-                new ReadOnlyFields()
+                new ClassificationNodesResetToTeamProject(project), 
+                new RemoveAutoFields(),
+                new ReadOnlyFields(),
+                new RevisedToChangedFields()
             };
         }
 
-        public async Task UpdateWorkItem(Client client, Uri item, WorkItemUpdate update,
+        private async Task UpdateWorkItem(Client client, 
+            Uri item,
+            WorkItemUpdate update,
             IDictionary<Uri, Uri> mapping)
         {
             var document = new JsonPatchDocument();
             UpdateFields(document, update);
-            await UpdateRelations(client, document, item, update, mapping);
+            await UpdateRelations(client, item, document, update, mapping);
 
             if (document.Operations.Any())
             {
@@ -39,18 +45,24 @@ namespace MigrateWorkItems.Tests
             }
         }
 
-        private async Task UpdateRelations(Client client, JsonPatchDocument document, Uri uri, WorkItemUpdate update,
+        private async Task UpdateRelations(IClient client, Uri uri, JsonPatchDocument document, WorkItemUpdate update,
             IDictionary<Uri, Uri> mapping)
         {
-            var item = await client.GetAsync(
-                new UriRequest<WorkItem>(uri, "5.1").WithQueryParams(("$expand", "relations")));
-            
-            new RelationsProcessor().Execute(document, item, update, mapping);
+            new RelationsProcessor(client).Execute(document, uri, update, mapping);
         }
 
         private void UpdateFields(JsonPatchDocument document, WorkItemUpdate update)
         {
-            if (update.Fields == null) return;
+            if (update.Fields == null)
+            {
+                update.Fields = new Dictionary<string, Value>
+                {
+                    ["System.RevisedDate"] = new Value { NewValue = update.RevisedDate },
+                    ["System.ChangedDate"] = new Value { NewValue = update.RevisedDate },
+                    ["System.ChangedBy"] = new Value { NewValue = update.RevisedBy },
+                    ["System.Rev"] = new Value { NewValue = update.Rev }
+                };
+            }
 
             foreach (var processor in _processors)
             {
@@ -63,7 +75,28 @@ namespace MigrateWorkItems.Tests
             }
         }
 
-        public async Task<WorkItem> CreateWorkItem(Client client, string organization, string project, WorkItemUpdate update)
+        public async Task Process(Client client, 
+            string organization, 
+            string project,
+            Uri uri,
+            WorkItemUpdate update, Dictionary<Uri, Uri> mapping)
+        {
+            if (update.Id == 1)
+            {
+                await CreateWorkItem(client, organization, project, uri, update, mapping);
+            }
+            else if (update.Fields != null && update.Fields.ContainsKey("System.IsDeleted"))
+            {
+                // skip delete and undelete work items for now.    
+            }
+            else
+            {
+                await UpdateWorkItem(client, mapping[uri], update, mapping);
+            }
+        }
+
+        private async Task CreateWorkItem(Client client, string organization, string project, Uri uri, WorkItemUpdate update,
+            Dictionary<Uri, Uri> mapping)
         {
             // May not be null but is in the updates work item updates API.
             update.Fields["System.AssignedTo"].NewValue ??= "";
@@ -71,20 +104,36 @@ namespace MigrateWorkItems.Tests
             {
                 processor.Execute(update);
             }
-            
+
             var document = new JsonPatchDocument();
             foreach (var (key, value) in update.Fields)
             {
                 document.Add($"fields/{key}", value.NewValue);
             }
 
+            await UpdateRelations(client, null, document, update, mapping);
+
             var type = update.Fields["System.WorkItemType"].NewValue;
             var item = await client.PostAsync(
                 new Request<WorkItem>($"{organization}/{project}/_apis/wit/workitems/${type}", "5.1")
                     .WithQueryParams(("bypassRules", true), ("$expand", "relations"))
                     .WithHeaders(("Content-Type", "application/json-patch+json")), document);
-            
-            return item;
+
+            mapping[uri] = item.Url;
+        }
+    }
+
+    public class NullProcessor : IFieldsProcessor
+    {
+        public void Execute(WorkItemUpdate update)
+        {
+            foreach (var (key, value) in update.Fields)
+            {
+                if (value.NewValue == null)
+                {
+                    update.Fields.Remove(key);
+                }
+            }
         }
     }
 }

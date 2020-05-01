@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Flurl;
 using Flurl.Http;
 using Microsoft.AspNetCore.JsonPatch;
+using Polly;
+using Polly.Extensions.Http;
 
 namespace AzureDevOpsRest
 {
@@ -14,7 +16,7 @@ namespace AzureDevOpsRest
 
         public Client(PersonalAccessToken token) => _token = token;
 
-        public Client() : this(PersonalAccessToken.Empty) 
+        public Client() : this(PersonalAccessToken.Empty)
         {
         }
 
@@ -41,9 +43,15 @@ namespace AzureDevOpsRest
                 .WithBasicAuth(string.Empty, _token);
 
         public Task<TData> PostAsync<TData>(IRequest<TData> request, object data) =>
-            Setup(request).PostJsonAsync(data).ReceiveJson<TData>();
+            Policy
+                .Handle<FlurlHttpException>(ex => ex.Call.HttpStatus == HttpStatusCode.InternalServerError)
+                .WaitAndRetryAsync(5, x => TimeSpan.FromSeconds(x * x))
+                .ExecuteAsync(() => Setup(request).PostJsonAsync(data).ReceiveJson<TData>());
 
         public Task<TData> PatchAsync<TData>(IRequest<TData> request, JsonPatchDocument document) =>
-            Setup(request).PatchJsonAsync(document).ReceiveJson<TData>();
+            Policy
+                .Handle<FlurlHttpException>(ex => ex.Call.HttpStatus == HttpStatusCode.InternalServerError)
+                .WaitAndRetryAsync(5, x => TimeSpan.FromSeconds(x * x))
+                .ExecuteAsync(() => Setup(request).PatchJsonAsync(document).ReceiveJson<TData>());
     }
 }

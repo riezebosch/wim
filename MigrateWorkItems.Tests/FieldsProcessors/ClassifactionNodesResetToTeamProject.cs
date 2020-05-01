@@ -1,13 +1,12 @@
-using System.Text.RegularExpressions;
 using MigrateWorkItems.Tests.Data;
 
 namespace MigrateWorkItems.Tests.FieldsProcessors
 {
-    internal class ClassificationNodes : IFieldsProcessor
+    internal class ClassificationNodesResetToTeamProject : IFieldsProcessor
     {
         private readonly string _project;
 
-        public ClassificationNodes(string project)
+        public ClassificationNodesResetToTeamProject(string project)
         {
             _project = project;
         }
@@ -23,9 +22,9 @@ namespace MigrateWorkItems.Tests.FieldsProcessors
 
         private void ReplaceTeamProject(WorkItemUpdate first, string field)
         {
-            if (first.Fields.TryGetValue(field, out var node))
+            if (first.Fields.ContainsKey(field))
             {
-                first.Fields[field].NewValue = Regex.Replace((string)node.NewValue, @"^[^\\]*", _project);
+                first.Fields[field].NewValue = _project;
             }
         }
     }
