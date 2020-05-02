@@ -6,7 +6,6 @@ using Flurl;
 using Flurl.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Polly;
-using Polly.Extensions.Http;
 
 namespace AzureDevOpsRest
 {

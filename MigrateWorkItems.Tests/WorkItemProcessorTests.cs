@@ -29,17 +29,7 @@ namespace MigrateWorkItems.Tests
             var client = new Client(config.Token);
 
             var processor = new WorkItemProcessor(project);
-
-            var mapping = new Dictionary<Uri, Uri>
-            {
-            };
-
-            // var updates =
-            //     new DirectoryInfo(Path.Join("unit4", "SME"))
-            //         .EnumerateDirectories()
-            //         .SelectMany(x => x.EnumerateFiles())
-            //         .Select(x => FromFile(x.FullName))
-            //         .OrderBy(x => x.Fields?["System.ChangedDate"].NewValue ?? x.RevisedDate);
+            var mapping = new Dictionary<Uri, Uri>();
 
             var db = new LiteDatabase("sme.db");
             var col = db.GetCollection<Update>();

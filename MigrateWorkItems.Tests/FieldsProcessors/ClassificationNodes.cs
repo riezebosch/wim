@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using MigrateWorkItems.Tests.Data;
 
 namespace MigrateWorkItems.Tests.FieldsProcessors
@@ -11,7 +12,7 @@ namespace MigrateWorkItems.Tests.FieldsProcessors
         {
             _project = project;
         }
-        public void Execute(WorkItemUpdate update)
+        public Task Execute(WorkItemUpdate update)
         {
             ReplaceTeamProject(update, "System.AreaPath");
             ReplaceTeamProject(update, "System.IterationPath");
@@ -19,6 +20,8 @@ namespace MigrateWorkItems.Tests.FieldsProcessors
             update.Fields.Remove("System.TeamProject");
             update.Fields.Remove("System.AreaId");
             update.Fields.Remove("System.IterationId");
+            
+            return Task.CompletedTask;
         }
 
         private void ReplaceTeamProject(WorkItemUpdate first, string field)

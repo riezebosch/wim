@@ -1,9 +1,10 @@
+using System.Threading.Tasks;
 using MigrateWorkItems.Tests.Data;
 
 namespace MigrateWorkItems.Tests.FieldsProcessors
 {
     internal interface IFieldsProcessor
     {
-        void Execute(WorkItemUpdate update);
+        Task Execute(WorkItemUpdate update);
     }
 }

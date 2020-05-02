@@ -33,7 +33,7 @@ namespace MigrateWorkItems.Tests
             IDictionary<Uri, Uri> mapping)
         {
             var document = new JsonPatchDocument();
-            UpdateFields(document, update);
+            await UpdateFields(document, update);
             await UpdateRelations(client, item, document, update, mapping);
 
             if (document.Operations.Any())
@@ -45,28 +45,17 @@ namespace MigrateWorkItems.Tests
             }
         }
 
-        private async Task UpdateRelations(IClient client, Uri uri, JsonPatchDocument document, WorkItemUpdate update,
+        private static async Task UpdateRelations(IClient client, Uri uri, JsonPatchDocument document, WorkItemUpdate update,
             IDictionary<Uri, Uri> mapping)
         {
-            new RelationsProcessor(client).Execute(document, uri, update, mapping);
+            await new RelationsProcessor(client).Execute(document, uri, update, mapping);
         }
 
-        private void UpdateFields(JsonPatchDocument document, WorkItemUpdate update)
+        private async Task UpdateFields(JsonPatchDocument document, WorkItemUpdate update)
         {
-            if (update.Fields == null)
-            {
-                update.Fields = new Dictionary<string, Value>
-                {
-                    ["System.RevisedDate"] = new Value { NewValue = update.RevisedDate },
-                    ["System.ChangedDate"] = new Value { NewValue = update.RevisedDate },
-                    ["System.ChangedBy"] = new Value { NewValue = update.RevisedBy },
-                    ["System.Rev"] = new Value { NewValue = update.Rev }
-                };
-            }
-
             foreach (var processor in _processors)
             {
-                processor.Execute(update);
+                await processor.Execute(update);
             }
             
             foreach (var (key, value) in update.Fields)
@@ -120,20 +109,6 @@ namespace MigrateWorkItems.Tests
                     .WithHeaders(("Content-Type", "application/json-patch+json")), document);
 
             mapping[uri] = item.Url;
-        }
-    }
-
-    public class NullProcessor : IFieldsProcessor
-    {
-        public void Execute(WorkItemUpdate update)
-        {
-            foreach (var (key, value) in update.Fields)
-            {
-                if (value.NewValue == null)
-                {
-                    update.Fields.Remove(key);
-                }
-            }
         }
     }
 }
