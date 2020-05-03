@@ -15,13 +15,14 @@ namespace MigrateWorkItems.Tests
     {
         private readonly IFieldsProcessor[] _processors;
 
-        public WorkItemProcessor(string project)
+        public WorkItemProcessor(string project, IFieldsResolver resolver)
         {
             _processors = new IFieldsProcessor[] {
                 new NullProcessor(),
                 new ClassificationNodes(project),
                 new ClassificationNodesResetToTeamProject(project), 
                 new RemoveAutoFields(),
+                new RemoveNotFoundFields(resolver), 
                 new ReadOnlyFields(),
                 new RevisedToChangedFields()
             };
@@ -36,7 +37,7 @@ namespace MigrateWorkItems.Tests
             await UpdateFields(document, update);
             await UpdateRelations(client, item, document, update, mapping);
 
-            if (document.Operations.Any())
+            if (!document.Operations.All(x => x.path == "/fields/System.ChangedBy" || x.path == "/fields/System.ChangedDate"))
             {
                 await client.PatchAsync(
                     new UriRequest<WorkItem>(item, "5.1")
@@ -85,13 +86,13 @@ namespace MigrateWorkItems.Tests
         }
 
         private async Task CreateWorkItem(Client client, string organization, string project, Uri uri, WorkItemUpdate update,
-            Dictionary<Uri, Uri> mapping)
+            IDictionary<Uri, Uri> mapping)
         {
             // May not be null but is in the updates work item updates API.
             update.Fields["System.AssignedTo"].NewValue ??= "";
             foreach (var processor in _processors)
             {
-                processor.Execute(update);
+                await processor.Execute(update);
             }
 
             var document = new JsonPatchDocument();
@@ -105,7 +106,7 @@ namespace MigrateWorkItems.Tests
             var type = update.Fields["System.WorkItemType"].NewValue;
             var item = await client.PostAsync(
                 new Request<WorkItem>($"{organization}/{project}/_apis/wit/workitems/${type}", "5.1")
-                    .WithQueryParams(("bypassRules", true), ("$expand", "relations"))
+                    .WithQueryParams(("bypassRules", true))
                     .WithHeaders(("Content-Type", "application/json-patch+json")), document);
 
             mapping[uri] = item.Url;

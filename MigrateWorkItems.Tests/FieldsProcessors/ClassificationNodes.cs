@@ -14,6 +14,7 @@ namespace MigrateWorkItems.Tests.FieldsProcessors
         }
         public Task Execute(WorkItemUpdate update)
         {
+            if (update.Fields == null) return Task.CompletedTask;;
             ReplaceTeamProject(update, "System.AreaPath");
             ReplaceTeamProject(update, "System.IterationPath");
 

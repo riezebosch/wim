@@ -9,6 +9,7 @@ namespace MigrateWorkItems.Tests.FieldsProcessors
     {
         public Task Execute(WorkItemUpdate update)
         {
+            if (update.Fields == null) return Task.CompletedTask;;
             foreach (var field in update.Fields)
             {
                 RemoveReadOnlyField(update, field.Key);

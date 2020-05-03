@@ -7,6 +7,7 @@ namespace MigrateWorkItems.Tests.FieldsProcessors
     {
         public Task Execute(WorkItemUpdate update)
         {
+            if (update.Fields == null) return Task.CompletedTask;
             foreach (var (key, value) in update.Fields)
             {
                 if (value.NewValue == null)

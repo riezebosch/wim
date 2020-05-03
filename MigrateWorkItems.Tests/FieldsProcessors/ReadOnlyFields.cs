@@ -16,21 +16,16 @@ namespace MigrateWorkItems.Tests.FieldsProcessors
             "System.HyperLinkCount",
             "System.AttachedFileCount",
             "System.NodeName",
-            "System.RevisedDate",
-            "System.ChangedDate",
             "System.Id",
-            "System.AuthorizedAs",
-            "System.AuthorizedDate",
             "System.Watermark",
             "System.Rev",
-            "System.CreatedDate",
-            "System.CreatedBy",
             "System.RelatedLinkCount",
             "System.BoardLane"
         };
 
         public Task Execute(WorkItemUpdate update)
         {
+            if (update.Fields == null) return Task.CompletedTask;;
             foreach (var field in Fields)
             {
                 RemoveReadOnlyField(update, field);

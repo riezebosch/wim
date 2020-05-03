@@ -18,6 +18,7 @@ namespace MigrateWorkItems.Tests
             
             var update = new WorkItemUpdate
             {
+                Id = 2,
                 RevisedBy = me,
                 RevisedDate = when
             };
@@ -43,6 +44,7 @@ namespace MigrateWorkItems.Tests
             var me = JToken.FromObject(new {Name = "me"});
             var update = new WorkItemUpdate
             {
+                Id = 2,
                 RevisedBy = me,
                 Fields = new Dictionary<string, Value>
                 {
@@ -57,6 +59,27 @@ namespace MigrateWorkItems.Tests
                 .NewValue
                 .Should()
                 .Be("someone");
+        }
+        
+        [Fact]
+        public void IfCreated()
+        {
+            var me = JToken.FromObject(new {Name = "me"});
+            var when = new DateTime(9999, 1, 1);
+            
+            var update = new WorkItemUpdate
+            {
+                Id = 1,
+                RevisedBy = me,
+                RevisedDate = when
+            };
+
+            new RevisedToChangedFields().Execute(update);
+
+            update
+                .Fields
+                .Should()
+                .BeNull();
         }
     }
 }

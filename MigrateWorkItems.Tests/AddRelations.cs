@@ -8,7 +8,7 @@ namespace MigrateWorkItems.Tests
 {
     internal class AddRelations : IRelationsProcessor
     {
-        public Task Execute(JsonPatchDocument document, Uri original, WorkItemUpdate update,
+        public Task Execute(JsonPatchDocument document, Uri target, WorkItemUpdate update,
             IDictionary<Uri, Uri> mapping)
         {
             if (update.Relations?.Added == null) return Task.CompletedTask;

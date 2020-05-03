@@ -14,12 +14,12 @@ namespace MigrateWorkItems.Tests
 
         public RemoveRelations(IClient client) => _client = client;
 
-        public async Task Execute(JsonPatchDocument document, Uri original, WorkItemUpdate update,
+        public async Task Execute(JsonPatchDocument document, Uri target, WorkItemUpdate update,
             IDictionary<Uri, Uri> mapping)
         {
-            if (update.Relations?.Removed == null) return;
+            if (target == null || update.Relations?.Removed == null) return;
 
-            var item = await _client.GetAsync(new UriRequest<WorkItem>(original, "5.1")
+            var item = await _client.GetAsync(new UriRequest<WorkItem>(target, "5.1")
                     .WithQueryParams(("$expand", "relations")));
             if (item.Relations == null) return;
             

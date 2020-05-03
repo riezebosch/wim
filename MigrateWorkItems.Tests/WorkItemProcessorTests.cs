@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+// using System.Linq;
 using System.Threading.Tasks;
 using AzureDevOpsRest;
 using FluentAssertions;
 using Flurl.Http;
 using LiteDB;
+using Microsoft.EntityFrameworkCore;
 using MigrateWorkItems.Tests.Data;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -28,27 +30,38 @@ namespace MigrateWorkItems.Tests
             var config = new TestConfig();
             var client = new Client(config.Token);
 
-            var processor = new WorkItemProcessor(project);
+            var processor = new WorkItemProcessor(project, new FieldsResolver(client, config.Organization, project));
             var mapping = new Dictionary<Uri, Uri>();
 
-            var db = new LiteDatabase("sme.db");
-            var col = db.GetCollection<Update>();
+            // using var db = new LiteDatabase("Filename=sme.db;Mode=ReadOnly");
+            // var col = db.GetCollection<Update>();
             
-            foreach (var item in col.FindAll().OrderBy(x => x.ChangeDate))
+            await using var context = new MigrationContext();
+            foreach (var item in context
+                .Updates
+                .AsQueryable()
+                // .Where(x => !x.Done)
+                .OrderBy(x => x.ChangeDate))
             {
-                var update = Deserialize(item.Content);
+                var update = FromFile(Path.Join("unit4", "SME", item.WorkItemId.ToString(), item.Id + ".json"));
                 
                 var uri = new Uri($"https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/{update.WorkItemId}");
                 try
                 {
                     await processor.Process(client, config.Organization, project, uri, update, mapping);
+                    item.Done = true;
+                    
+                    await context.SaveChangesAsync();
                 }
                 catch (FlurlHttpException ex)
                 {
                     _output.WriteLine(ex.Call.Request.RequestUri.ToString());
                     _output.WriteLine(ex.Call.RequestBody);
-                    
-                    _output.WriteLine(await ex.Call.Response.Content.ReadAsStringAsync());
+
+                    if (ex.Call.Response?.Content != null)
+                    {
+                        _output.WriteLine(await ex.Call.Response.Content.ReadAsStringAsync());
+                    }
 
                     throw;
                 }
@@ -103,7 +116,7 @@ namespace MigrateWorkItems.Tests
         [Fact]
         public void Convert()
         {
-            var db = new LiteDatabase("sme.db");
+            using var db = new LiteDatabase("sme.db");
             var col = db.GetCollection<Update>();
             col.EnsureIndex(x => x.Id);
 
@@ -112,7 +125,7 @@ namespace MigrateWorkItems.Tests
                     .EnumerateDirectories()
                     .SelectMany(x => x.EnumerateFiles());
             
-            foreach (var file in updates)
+            foreach (var file in updates.AsParallel())
             {
                 var update = FromFile(file.FullName);
                 col.Insert(new Update
@@ -122,11 +135,47 @@ namespace MigrateWorkItems.Tests
                         WorkItemId = update.WorkItemId,
                         Id = update.Id,
                     },
-                    ChangeDate = (DateTime?) update.Fields?["System.ChangedDate"].NewValue ?? update.RevisedDate,
+                    ChangeDate = (DateTime?) update.Fields?["System.ChangedDate"].NewValue 
+                                 ?? (DateTime?) update.Fields?["System.CreatedDate"].NewValue 
+                                 ?? update.RevisedDate,
                     Content = File.ReadAllText(file.FullName)
                 });
             }
            
+        }
+        
+        [Fact]
+        public async Task ConvertToSqlite()
+        {
+            await using var context = new MigrationContext();
+            await context.Database.EnsureCreatedAsync();
+                
+            var updates =
+                new DirectoryInfo(Path.Join("unit4", "SME"))
+                    .EnumerateDirectories()
+                    .SelectMany(x => x.EnumerateFiles());
+
+            int i = 0;
+            foreach (var file in updates.AsParallel())
+            {
+                var update = FromFile(file.FullName);
+                await context.Updates.AddAsync(new Update2
+                {
+                    WorkItemId = update.WorkItemId,
+                    Id = update.Id,
+                    ChangeDate = (DateTime?) update.Fields?["System.ChangedDate"].NewValue 
+                                 ?? (DateTime?) update.Fields?["System.CreatedDate"].NewValue 
+                                 ?? update.RevisedDate,
+                    // Content = File.ReadAllText(file.FullName)
+                });
+
+                if (i++ % 1000 == 0)
+                {
+                    await context.SaveChangesAsync();
+                }
+            }
+            
+            await context.SaveChangesAsync();
         }
 
         // [Fact]
@@ -188,15 +237,41 @@ namespace MigrateWorkItems.Tests
         // }
     }
 
+    public class MigrationContext : DbContext
+    {
+        protected override void OnConfiguring(DbContextOptionsBuilder options) =>
+            options.UseSqlite("Data Source=migration.db");
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<Update2>().HasKey(c => new { c.Id, c.WorkItemId });
+        }
+
+        public DbSet<Update2> Updates { get; set; }
+    }
+
     public class Areas
     {
     }
 
     public class Update
     {
+        // public int Id { get; set; }
+        // public int WorkItemId { get; set; }
         public DateTime ChangeDate { get; set; }
         public UpdateId Id { get; set; }
         public string Content { get; set; }
+        public bool Done { get; set; }
+    }
+    
+    public class Update2
+    {
+        public int Id { get; set; }
+        public int WorkItemId { get; set; }
+        public DateTime ChangeDate { get; set; }
+        // public UpdateId Id { get; set; }
+        // public string Content { get; set; }
+        public bool Done { get; set; }
     }
 
     public class UpdateId

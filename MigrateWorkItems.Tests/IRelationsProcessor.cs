@@ -8,6 +8,6 @@ namespace MigrateWorkItems.Tests
 {
     internal interface IRelationsProcessor
     {
-        Task Execute(JsonPatchDocument document, Uri original, WorkItemUpdate update, IDictionary<Uri, Uri> mapping);
+        Task Execute(JsonPatchDocument document, Uri target, WorkItemUpdate update, IDictionary<Uri, Uri> mapping);
     }
 }

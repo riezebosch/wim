@@ -8,9 +8,12 @@ namespace MigrateWorkItems.Tests.FieldsProcessors
     {
         public Task Execute(WorkItemUpdate update)
         {
-            update.Fields ??= new Dictionary<string, Value>();
-            Replace(update, "System.ChangedBy", update.RevisedBy);
-            Replace(update, "System.ChangedDate", update.RevisedDate);
+            if (update.Id > 1)
+            {
+                update.Fields ??= new Dictionary<string, Value>();
+                Replace(update, "System.ChangedBy", update.RevisedBy);
+                Replace(update, "System.ChangedDate", update.RevisedDate);
+            }
 
             return Task.CompletedTask;
         }

@@ -16,6 +16,7 @@ namespace MigrateWorkItems.Tests
 
         public async Task Execute(WorkItemUpdate update)
         {
+            if (update.Fields == null) return;
             var existing = (await _resolver.ListAllFields()).Select(x => x.ReferenceName).ToHashSet();
             foreach (var (key, _) in update.Fields)
             {
