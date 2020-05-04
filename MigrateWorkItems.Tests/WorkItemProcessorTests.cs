@@ -30,41 +30,58 @@ namespace MigrateWorkItems.Tests
             var config = new TestConfig();
             var client = new Client(config.Token);
 
-            var processor = new WorkItemProcessor(project, new FieldsResolver(client, config.Organization, project));
-            var mapping = new Dictionary<Uri, Uri>();
-
-            // using var db = new LiteDatabase("Filename=sme.db;Mode=ReadOnly");
-            // var col = db.GetCollection<Update>();
-            
             await using var context = new MigrationContext();
-            foreach (var item in context
-                .Updates
-                .AsQueryable()
-                // .Where(x => !x.Done)
-                .OrderBy(x => x.ChangeDate))
-            {
-                var update = FromFile(Path.Join("unit4", "SME", item.WorkItemId.ToString(), item.Id + ".json"));
-                
-                var uri = new Uri($"https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/{update.WorkItemId}");
-                try
-                {
-                    await processor.Process(client, config.Organization, project, uri, update, mapping);
-                    item.Done = true;
-                    
-                    await context.SaveChangesAsync();
-                }
-                catch (FlurlHttpException ex)
-                {
-                    _output.WriteLine(ex.Call.Request.RequestUri.ToString());
-                    _output.WriteLine(ex.Call.RequestBody);
+            context.ChangeTracker.AutoDetectChangesEnabled = false;
+            
+            var mapper = new Mapper(context);
 
-                    if (ex.Call.Response?.Content != null)
+            var processor = new WorkItemProcessor(
+                project,
+                client,
+                new FieldsResolver(client, config.Organization, project), 
+                new RelationsProcessors(client, mapper),
+                mapper);
+
+            var i = 0;
+            try
+            {
+                foreach (var item in context
+                    .Updates
+                    .AsQueryable()
+                    .Where(x => !x.Done)
+                    .OrderBy(x => x.ChangeDate)
+                    .ThenByDescending(x => x.Relations))
+                {
+                    var update = FromFile(Path.Join("unit4", "SME", item.WorkItemId.ToString(), item.Id + ".json"));
+
+                    try
                     {
-                        _output.WriteLine(await ex.Call.Response.Content.ReadAsStringAsync());
+                        await processor.Process(config.Organization, project, update);
+                        item.Done = true;
+                        context.Updates.Update(item);
+                    }
+                    catch (FlurlHttpException ex)
+                    {
+                        _output.WriteLine(ex.Call.Request.RequestUri.ToString());
+                        _output.WriteLine(ex.Call.RequestBody);
+
+                        if (ex.Call.Response?.Content != null)
+                        {
+                            _output.WriteLine(await ex.Call.Response.Content.ReadAsStringAsync());
+                        }
+
+                        throw;
                     }
 
-                    throw;
+                    if (i++ > 1000)
+                    {
+                        await context.SaveChangesAsync();
+                    }
                 }
+            }
+            finally
+            {
+                await context.SaveChangesAsync();
             }
 
             // var result = await client.GetAsync(WorkItems.WorkItem(config.Organization, pbi1.Id, 
@@ -148,6 +165,8 @@ namespace MigrateWorkItems.Tests
         public async Task ConvertToSqlite()
         {
             await using var context = new MigrationContext();
+            context.ChangeTracker.AutoDetectChangesEnabled = false;
+            
             await context.Database.EnsureCreatedAsync();
                 
             var updates =
@@ -155,7 +174,7 @@ namespace MigrateWorkItems.Tests
                     .EnumerateDirectories()
                     .SelectMany(x => x.EnumerateFiles());
 
-            int i = 0;
+            var i = 0;
             foreach (var file in updates.AsParallel())
             {
                 var update = FromFile(file.FullName);
@@ -166,7 +185,7 @@ namespace MigrateWorkItems.Tests
                     ChangeDate = (DateTime?) update.Fields?["System.ChangedDate"].NewValue 
                                  ?? (DateTime?) update.Fields?["System.CreatedDate"].NewValue 
                                  ?? update.RevisedDate,
-                    // Content = File.ReadAllText(file.FullName)
+                    Relations = update.Relations?.Added?.Count() + update.Relations?.Removed?.Count() ?? 0
                 });
 
                 if (i++ % 1000 == 0)
@@ -248,10 +267,13 @@ namespace MigrateWorkItems.Tests
         }
 
         public DbSet<Update2> Updates { get; set; }
+        public DbSet<WorkItemMapping> WorkItemMapping { get; set; }
     }
 
-    public class Areas
+    public class WorkItemMapping
     {
+        public int Id { get; set; }
+        public Uri Url { get; set; }
     }
 
     public class Update
@@ -272,6 +294,7 @@ namespace MigrateWorkItems.Tests
         // public UpdateId Id { get; set; }
         // public string Content { get; set; }
         public bool Done { get; set; }
+        public int Relations { get; set; }
     }
 
     public class UpdateId

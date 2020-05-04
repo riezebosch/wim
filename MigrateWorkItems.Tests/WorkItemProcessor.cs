@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AzureDevOpsRest;
@@ -14,8 +13,15 @@ namespace MigrateWorkItems.Tests
     public class WorkItemProcessor
     {
         private readonly IFieldsProcessor[] _processors;
+        private static IRelationsProcessors _relations;
+        private readonly IMapper _mapper;
+        private readonly IClient _client;
 
-        public WorkItemProcessor(string project, IFieldsResolver resolver)
+        public WorkItemProcessor(string project,
+            IClient client,
+            IFieldsResolver resolver, 
+            IRelationsProcessors relations,
+            IMapper mapper)
         {
             _processors = new IFieldsProcessor[] {
                 new NullProcessor(),
@@ -26,30 +32,35 @@ namespace MigrateWorkItems.Tests
                 new ReadOnlyFields(),
                 new RevisedToChangedFields()
             };
+
+            _client = client;
+            _relations = relations;
+            _mapper = mapper;
         }
 
-        private async Task UpdateWorkItem(Client client, 
-            Uri item,
-            WorkItemUpdate update,
-            IDictionary<Uri, Uri> mapping)
+        private async Task UpdateWorkItem(WorkItemUpdate update)
         {
             var document = new JsonPatchDocument();
             await UpdateFields(document, update);
-            await UpdateRelations(client, item, document, update, mapping);
+            await UpdateRelations(document, update);
 
+            if (!_mapper.TryGetWorkItem(update.WorkItemId, out var uri))
+            {
+                throw new Exception($"Trying to update item {update.WorkItemId} with update {update.Id} but no mapping found.");
+            }
+            
             if (!document.Operations.All(x => x.path == "/fields/System.ChangedBy" || x.path == "/fields/System.ChangedDate"))
             {
-                await client.PatchAsync(
-                    new UriRequest<WorkItem>(item, "5.1")
+                await _client.PatchAsync(
+                    new UriRequest<WorkItem>(uri, "5.1")
                         .WithQueryParams(("bypassRules", true))
                         .WithHeaders(("Content-Type", "application/json-patch+json")), document);
             }
         }
 
-        private static async Task UpdateRelations(IClient client, Uri uri, JsonPatchDocument document, WorkItemUpdate update,
-            IDictionary<Uri, Uri> mapping)
+        private static async Task UpdateRelations(JsonPatchDocument document, WorkItemUpdate update)
         {
-            await new RelationsProcessor(client).Execute(document, uri, update, mapping);
+            await _relations.Execute(document, update);
         }
 
         private async Task UpdateFields(JsonPatchDocument document, WorkItemUpdate update)
@@ -65,15 +76,13 @@ namespace MigrateWorkItems.Tests
             }
         }
 
-        public async Task Process(Client client, 
-            string organization, 
+        public async Task Process(string organization, 
             string project,
-            Uri uri,
-            WorkItemUpdate update, Dictionary<Uri, Uri> mapping)
+            WorkItemUpdate update)
         {
             if (update.Id == 1)
             {
-                await CreateWorkItem(client, organization, project, uri, update, mapping);
+                await CreateWorkItem(organization, project, update);
             }
             else if (update.Fields != null && update.Fields.ContainsKey("System.IsDeleted"))
             {
@@ -81,12 +90,13 @@ namespace MigrateWorkItems.Tests
             }
             else
             {
-                await UpdateWorkItem(client, mapping[uri], update, mapping);
+                await UpdateWorkItem(update);
             }
         }
 
-        private async Task CreateWorkItem(Client client, string organization, string project, Uri uri, WorkItemUpdate update,
-            IDictionary<Uri, Uri> mapping)
+        private async Task CreateWorkItem(string organization, 
+            string project,
+            WorkItemUpdate update)
         {
             // May not be null but is in the updates work item updates API.
             update.Fields["System.AssignedTo"].NewValue ??= "";
@@ -101,15 +111,21 @@ namespace MigrateWorkItems.Tests
                 document.Add($"fields/{key}", value.NewValue);
             }
 
-            await UpdateRelations(client, null, document, update, mapping);
+            await UpdateRelations(document, update);
 
             var type = update.Fields["System.WorkItemType"].NewValue;
-            var item = await client.PostAsync(
+            var item = await _client.PostAsync(
                 new Request<WorkItem>($"{organization}/{project}/_apis/wit/workitems/${type}", "5.1")
                     .WithQueryParams(("bypassRules", true))
                     .WithHeaders(("Content-Type", "application/json-patch+json")), document);
 
-            mapping[uri] = item.Url;
+            await _mapper.WorkItem(update.WorkItemId, item.Url);
         }
+    }
+
+    public interface IMapper
+    {
+        Task WorkItem(int from, Uri to);
+        bool TryGetWorkItem(int id, out Uri url);
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using AzureDevOpsRest;
 using AzureDevOpsRest.Data.WorkItems;
@@ -11,21 +10,27 @@ namespace MigrateWorkItems.Tests
     internal class RemoveRelations : IRelationsProcessor
     {
         private readonly IClient _client;
+        private readonly IMapper _mapper;
 
-        public RemoveRelations(IClient client) => _client = client;
-
-        public async Task Execute(JsonPatchDocument document, Uri target, WorkItemUpdate update,
-            IDictionary<Uri, Uri> mapping)
+        public RemoveRelations(IClient client, IMapper mapper)
         {
-            if (target == null || update.Relations?.Removed == null) return;
+            _client = client;
+            _mapper = mapper;
+        }
 
+        public async Task Execute(JsonPatchDocument document, WorkItemUpdate update)
+        {
+            if (update.Relations?.Removed == null) return;
+            if (!_mapper.TryGetWorkItem(update.WorkItemId, out var target)) return;
+            
             var item = await _client.GetAsync(new UriRequest<WorkItem>(target, "5.1")
                     .WithQueryParams(("$expand", "relations")));
             if (item.Relations == null) return;
             
             foreach (var relation in update.Relations.Removed)
             {
-                if (!mapping.TryGetValue(relation.Url, out var url)) continue;
+                if (!relation.Url.ToWorkItemId(out var id)) continue;
+                if (!_mapper.TryGetWorkItem(id, out var url)) continue;
                 
                 var index = Array.FindIndex(item.Relations, x => x.Url == url && x.Rel == relation.Rel);
                 if (index >= 0)
