@@ -8,13 +8,13 @@ namespace MigrateWorkItems.Tests
     public class SaveWorkItemsTests
     {
         [Fact]
-        public async Task Load()
+        public async Task To()
         {
             var config = new TestConfig();
             var client = new Client(config.Token);
 
-            var projectDir = Directory.CreateDirectory(config.Organization).CreateSubdirectory(config.Project);
-            await SaveWorkItems.To(client, projectDir, config.Organization, config.Project);
+            var items = Directory.CreateDirectory(config.Organization).CreateSubdirectory(config.Project).CreateSubdirectory("items");
+            await SaveWorkItems.To(client, items, config.Organization, @"SME\Multivers", @"SME\Web based", @"SME\Administrative");
         }
     }
 }

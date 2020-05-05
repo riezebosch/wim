@@ -44,7 +44,7 @@ namespace AzureDevOpsRest
         public Task<TData> PostAsync<TData>(IRequest<TData> request, object data) =>
             Policy
                 .Handle<FlurlHttpException>(ex => ex.Call.HttpStatus == HttpStatusCode.InternalServerError)
-                .WaitAndRetryAsync(5, x => TimeSpan.FromSeconds(x * x))
+                .WaitAndRetryAsync(10, x => TimeSpan.FromSeconds(x * x))
                 .ExecuteAsync(() => Setup(request).PostJsonAsync(data).ReceiveJson<TData>());
 
         public Task<TData> PatchAsync<TData>(IRequest<TData> request, JsonPatchDocument document) =>

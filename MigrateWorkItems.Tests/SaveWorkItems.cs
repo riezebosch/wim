@@ -13,10 +13,10 @@ namespace MigrateWorkItems.Tests
 {
     internal static class SaveWorkItems
     {
-        public static async Task To(Client client, DirectoryInfo target, string organization, string project)
+        public static async Task To(Client client, DirectoryInfo target, string organization, params string[] areas)
         {
             var tasks = new List<Task>();
-            await foreach (var item in QueryAllWorkItems(client, organization, project))
+            await foreach (var item in QueryAllWorkItems(client, organization, areas))
             {
                 tasks.Add(SaveUpdates(client, item, target));
             }
@@ -37,8 +37,9 @@ namespace MigrateWorkItems.Tests
         }
 
         private static async IAsyncEnumerable<WorkItemRef> QueryAllWorkItems(Client client, string organization,
-            string project)
+            string[] areas)
         {
+            var where = string.Join(" OR ", areas.Select(area => $"[System.AreaPath] UNDER '{area}'"));
             var i = 0;
             while(true)
             {
@@ -46,7 +47,7 @@ namespace MigrateWorkItems.Tests
                     new WorkItemQuery
                     {
                         Query =
-                            $"Select [System.Id] FROM WorkItems WHERE [System.TeamProject] == '{project}' AND [System.Id] > {i} ORDER BY [System.Id]"
+                            $"Select [System.Id] FROM WorkItems WHERE ({where}) AND [System.Id] > {i} ORDER BY [System.Id]"
                     });
                 
                 if (!items.WorkItems.Any())

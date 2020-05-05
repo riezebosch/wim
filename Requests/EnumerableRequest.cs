@@ -1,8 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using AzureDevOpsRest.Data;
 using Flurl.Http;
+using Polly;
 
 namespace AzureDevOpsRest.Requests
 {
@@ -18,7 +22,7 @@ namespace AzureDevOpsRest.Requests
             bool more;
             do
             {
-                var task = request.GetAsync();
+                var task = WithRetry(request);
                 more = HandleContinuation(request, await task.ConfigureAwait(false));
 
                 var items = await task.ReceiveJson<Multiple<TData>>();
@@ -28,6 +32,12 @@ namespace AzureDevOpsRest.Requests
                 }
             } while (more);
         }
+
+        private static Task<HttpResponseMessage> WithRetry(IFlurlRequest request) => 
+            Policy
+                .Handle<FlurlHttpException>(ex => ex.Call.HttpStatus >= HttpStatusCode.InternalServerError && ex.Call.HttpStatus <= (HttpStatusCode)599)
+                .WaitAndRetryAsync(10, x => TimeSpan.FromSeconds(x * x))
+                .ExecuteAsync(() => request.GetAsync());
 
         private static bool HandleContinuation(IFlurlRequest request, HttpResponseMessage response)
         {

@@ -26,11 +26,11 @@ namespace MigrateWorkItems.Tests
         [Fact]
         public async Task TestFromJson()
         {
-            const string project = "migration-target";
+            const string project = "SME";
             var config = new TestConfig();
             var client = new Client(config.Token);
 
-            await using var context = new MigrationContext();
+            await using var context = new MigrationContext(Path.Join("unit4", "SME"));
             context.ChangeTracker.AutoDetectChangesEnabled = false;
             
             var mapper = new Mapper(context);
@@ -52,7 +52,7 @@ namespace MigrateWorkItems.Tests
                     .OrderBy(x => x.ChangeDate)
                     .ThenByDescending(x => x.Relations))
                 {
-                    var update = FromFile(Path.Join("unit4", "SME", item.WorkItemId.ToString(), item.Id + ".json"));
+                    var update = FromFile(Path.Join("unit4", "SME", "items", item.WorkItemId.ToString(), item.Id + ".json"));
 
                     try
                     {
@@ -162,15 +162,17 @@ namespace MigrateWorkItems.Tests
         }
         
         [Fact]
-        public async Task ConvertToSqlite()
+        public async Task Index()
         {
-            await using var context = new MigrationContext();
+            var output = Path.Join("unit4", "SME");
+            
+            await using var context = new MigrationContext(output);
             context.ChangeTracker.AutoDetectChangesEnabled = false;
             
             await context.Database.EnsureCreatedAsync();
-                
+
             var updates =
-                new DirectoryInfo(Path.Join("unit4", "SME"))
+                new DirectoryInfo(Path.Join(output, "items"))
                     .EnumerateDirectories()
                     .SelectMany(x => x.EnumerateFiles());
 
@@ -258,8 +260,12 @@ namespace MigrateWorkItems.Tests
 
     public class MigrationContext : DbContext
     {
+        private readonly string _db;
+
+        public MigrationContext(string output) => _db = Path.Join(output, "migration.db");
+
         protected override void OnConfiguring(DbContextOptionsBuilder options) =>
-            options.UseSqlite("Data Source=migration.db");
+            options.UseSqlite($"Data Source={_db}");
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
