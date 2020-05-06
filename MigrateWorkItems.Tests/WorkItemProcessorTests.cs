@@ -1,15 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-// using System.Linq;
 using System.Threading.Tasks;
 using AzureDevOpsRest;
-using FluentAssertions;
 using Flurl.Http;
-using LiteDB;
-using Microsoft.EntityFrameworkCore;
-using MigrateWorkItems.Tests.Data;
+using MigrateWorkItems.Data;
+using MigrateWorkItems.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Xunit;
@@ -52,7 +48,7 @@ namespace MigrateWorkItems.Tests
                     .OrderBy(x => x.ChangeDate)
                     .ThenByDescending(x => x.Relations))
                 {
-                    var update = FromFile(Path.Join("unit4", "SME", "items", item.WorkItemId.ToString(), item.Id + ".json"));
+                    var update = Indexer.FromFile(Path.Join("unit4", "SME", "items", item.WorkItemId.ToString(), item.Id + ".json"));
 
                     try
                     {
@@ -99,68 +95,6 @@ namespace MigrateWorkItems.Tests
             // // child.Fields["System.Parent"].Should().Be(pbi2.Id);
         }
 
-        private static IEnumerable<(Uri, WorkItemUpdate update)> LoadUpdates(string id, params int[] updates) =>
-            updates
-                .Select(x => Path.Join("items", id, $"{x}.json"))
-                .Select(FromFile)
-                .Select(x => (new Uri($"https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/workItems/{id}"), x));
-
-        private static WorkItemUpdate FromFile(string file) 
-            => Deserialize(File.ReadAllText(file));
-
-        private static WorkItemUpdate Deserialize(string content) => 
-            JsonConvert.DeserializeObject<WorkItemUpdate>(content, new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()});
-
-        [Fact]
-        public void LoadOrder()
-        {
-            LoadUpdates("2195", 2, 3, 4).OrderBy(x => x.update.RevisedDate.Year != 9999 ? x.update.RevisedDate : x.update.Fields["System.ChangedDate"].NewValue)
-                .Select(x => x.update.Id)
-                .Should()
-                .BeEquivalentTo(new[] { 2, 3, 4 }, options => options.WithStrictOrdering());
-            
-            LoadUpdates("2196", 2, 3).OrderBy(x => x.update.RevisedDate)
-                .Select(x => x.update.Id)
-                .Should()
-                .BeEquivalentTo(new[] { 2, 3 }, options => options.WithStrictOrdering());
-            
-            LoadUpdates("2197", 2, 3, 4, 5).OrderBy(x => x.update.RevisedDate)
-                .Select(x => x.update.Id)
-                .Should()
-                .BeEquivalentTo(new[] { 2, 3, 4, 5 }, options => options.WithStrictOrdering());
-        }
-        
-        [Fact]
-        public void Convert()
-        {
-            using var db = new LiteDatabase("sme.db");
-            var col = db.GetCollection<Update>();
-            col.EnsureIndex(x => x.Id);
-
-            var updates =
-                new DirectoryInfo(Path.Join("unit4", "SME"))
-                    .EnumerateDirectories()
-                    .SelectMany(x => x.EnumerateFiles());
-            
-            foreach (var file in updates.AsParallel())
-            {
-                var update = FromFile(file.FullName);
-                col.Insert(new Update
-                {
-                    Id = new UpdateId
-                    {
-                        WorkItemId = update.WorkItemId,
-                        Id = update.Id,
-                    },
-                    ChangeDate = (DateTime?) update.Fields?["System.ChangedDate"].NewValue 
-                                 ?? (DateTime?) update.Fields?["System.CreatedDate"].NewValue 
-                                 ?? update.RevisedDate,
-                    Content = File.ReadAllText(file.FullName)
-                });
-            }
-           
-        }
-        
         [Fact]
         public async Task Index()
         {
@@ -171,32 +105,7 @@ namespace MigrateWorkItems.Tests
             
             await context.Database.EnsureCreatedAsync();
 
-            var updates =
-                new DirectoryInfo(Path.Join(output, "items"))
-                    .EnumerateDirectories()
-                    .SelectMany(x => x.EnumerateFiles());
-
-            var i = 0;
-            foreach (var file in updates.AsParallel())
-            {
-                var update = FromFile(file.FullName);
-                await context.Updates.AddAsync(new Update2
-                {
-                    WorkItemId = update.WorkItemId,
-                    Id = update.Id,
-                    ChangeDate = (DateTime?) update.Fields?["System.ChangedDate"].NewValue 
-                                 ?? (DateTime?) update.Fields?["System.CreatedDate"].NewValue 
-                                 ?? update.RevisedDate,
-                    Relations = update.Relations?.Added?.Count() + update.Relations?.Removed?.Count() ?? 0
-                });
-
-                if (i++ % 1000 == 0)
-                {
-                    await context.SaveChangesAsync();
-                }
-            }
-            
-            await context.SaveChangesAsync();
+            await Indexer.Index(context, new DirectoryInfo(output));
         }
 
         // [Fact]
@@ -258,30 +167,6 @@ namespace MigrateWorkItems.Tests
         // }
     }
 
-    public class MigrationContext : DbContext
-    {
-        private readonly string _db;
-
-        public MigrationContext(string output) => _db = Path.Join(output, "migration.db");
-
-        protected override void OnConfiguring(DbContextOptionsBuilder options) =>
-            options.UseSqlite($"Data Source={_db}");
-
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            builder.Entity<Update2>().HasKey(c => new { c.Id, c.WorkItemId });
-        }
-
-        public DbSet<Update2> Updates { get; set; }
-        public DbSet<WorkItemMapping> WorkItemMapping { get; set; }
-    }
-
-    public class WorkItemMapping
-    {
-        public int Id { get; set; }
-        public Uri Url { get; set; }
-    }
-
     public class Update
     {
         // public int Id { get; set; }
@@ -290,17 +175,6 @@ namespace MigrateWorkItems.Tests
         public UpdateId Id { get; set; }
         public string Content { get; set; }
         public bool Done { get; set; }
-    }
-    
-    public class Update2
-    {
-        public int Id { get; set; }
-        public int WorkItemId { get; set; }
-        public DateTime ChangeDate { get; set; }
-        // public UpdateId Id { get; set; }
-        // public string Content { get; set; }
-        public bool Done { get; set; }
-        public int Relations { get; set; }
     }
 
     public class UpdateId

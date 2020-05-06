@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <AssemblyName>wim</AssemblyName>
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>wim</ToolCommandName>
+        <PackageOutputPath>./nupkg</PackageOutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MigrateWorkItems\MigrateWorkItems.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Humanizer.Core" Version="2.8.11" />
+      <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.0.0" />
+    </ItemGroup>
+
+    <PropertyGroup>
+        <Authors>Manuel Riezebosch</Authors>
+        <NeutralLanguage>en-US</NeutralLanguage>
+        <AssemblyTitle>wim</AssemblyTitle>
+        <Description>Perform a perfect-ish copy of work items!</Description>
+        <Copyright>Manuel Riezebosch 2020</Copyright> 
+        <PackageReleaseNotes>Migrate those items!</PackageReleaseNotes>
+        <PackageTags>workitems;migration;azure devops;</PackageTags>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/riezebosch/wim.git</RepositoryUrl>
+        <Version>0.0.1</Version>
+    </PropertyGroup>
+</Project>
