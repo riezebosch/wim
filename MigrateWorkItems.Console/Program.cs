@@ -8,8 +8,11 @@ using AzureDevOpsRest;
 using Flurl.Http;
 using Humanizer;
 using McMaster.Extensions.CommandLineUtils;
+using McMaster.Extensions.CommandLineUtils.Conventions;
 using MigrateWorkItems;
+using MigrateWorkItems.Index;
 using MigrateWorkItems.Model;
+using Newtonsoft.Json.Linq;
 using static System.Console;
 
 namespace WorkItemMigration.Console
@@ -60,6 +63,9 @@ namespace WorkItemMigration.Console
             
             var mapper = new Mapper(context);
 
+            WriteLine("Uploading attachments");
+            await AttachmentsProcessor.UploadAttachments(client, organization, project, context, output);
+
             var processor = new WorkItemProcessor(
                 project,
                 client,
@@ -80,9 +86,10 @@ namespace WorkItemMigration.Console
                 var total = query.Count();
                 var start = Stopwatch.StartNew();
                 
+                WriteLine("Performing work item updates...");
                 foreach (var item in query)
                 {
-                    var update = Indexer.FromFile(Path.Join(output, "items", item.WorkItemId.ToString(), item.Id + ".json"));
+                    var update = WorkItemIndexer.FromFile(Path.Join(output, "items", item.WorkItemId.ToString(), item.Id + ".json"));
 
                     try
                     {
@@ -133,41 +140,10 @@ namespace WorkItemMigration.Console
 
                 cmd.HelpOption();
                 
-                cmd.OnExecuteAsync(c => RunClone(organization.Value(), token.Value(), areaPaths.Values, output.Value()));
+                cmd.OnExecuteAsync(c => Clone.RunClone(organization.Value(), token.Value(), areaPaths.Values, output.Value(), WriteLine));
             });
             
             
-        }
-
-        private static async Task RunClone(string organization, string token, IEnumerable<string> areas, string output)
-        {
-            var dir = Directory.CreateDirectory(output);
-            var items = dir.CreateSubdirectory("items");
-            
-            try
-            {
-                WriteLine("Downloading work items...");
-                await SaveWorkItems.To(new Client(token), items, organization,
-                    areas.ToArray());
-
-                WriteLine("Indexing operations...");
-                await using var context = new MigrationContext(dir.FullName);
-                await context.Database.EnsureCreatedAsync();
-                
-                await Indexer.Index(context, items);
-            }
-            catch (FlurlHttpException ex)
-            {
-                WriteLine(ex.Call.Request.RequestUri.ToString());
-                WriteLine(ex.Call.RequestBody);
-
-                if (ex.Call.Response?.Content != null)
-                {
-                    WriteLine(await ex.Call.Response.Content.ReadAsStringAsync());
-                }
-
-                throw;
-            }
         }
     }
 }

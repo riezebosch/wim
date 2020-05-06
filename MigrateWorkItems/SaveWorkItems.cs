@@ -11,39 +11,41 @@ using Newtonsoft.Json.Linq;
 
 namespace MigrateWorkItems
 {
-    public static class SaveWorkItems
+    public class SaveWorkItems
     {
-        public static async Task To(Client client, DirectoryInfo target, string organization, params string[] areas)
-        {
-            var tasks = new List<Task>();
-            await foreach (var item in QueryAllWorkItems(client, organization, areas))
-            {
-                tasks.Add(SaveUpdates(client, item, target));
-            }
+        private readonly IClient _client;
 
-            await Task.WhenAll(tasks);
+        public SaveWorkItems(IClient client) => _client = client;
+
+        public async IAsyncEnumerable<IAsyncEnumerable<JToken>> To(DirectoryInfo target, string organization, DirectoryInfo attachments, params string[] areas)
+        {
+            await foreach (var item in QueryAllWorkItems(organization, areas))
+            {
+                yield return SaveUpdates(_client, item, target);
+            }
         }
         
-        private static async Task SaveUpdates(Client client, WorkItemRef item, DirectoryInfo projectDir)
+        private static async IAsyncEnumerable<JToken> SaveUpdates(IClient client, WorkItemRef item, DirectoryInfo items)
         {
-            var itemDir = projectDir.CreateSubdirectory(item.Id.ToString());
+            var itemDir = items.CreateSubdirectory(item.Id.ToString());
             await foreach (var update in client.GetAsync(
                 new UriRequest<JToken>(new Uri(item.Url + "/updates"), "5.1").AsEnumerable()))
             {
-                var path = Path.ChangeExtension(Path.Combine(itemDir.FullName, update.SelectToken("id").Value<string>()),
-                    "json");
+                var path = Path.Combine(itemDir.FullName, update.SelectToken("id").Value<string>() + ".json");
                 File.WriteAllText(path, update.ToString());
+
+                yield return update;
             }
         }
 
-        private static async IAsyncEnumerable<WorkItemRef> QueryAllWorkItems(Client client, string organization,
-            string[] areas)
+        private async IAsyncEnumerable<WorkItemRef> QueryAllWorkItems(string organization, IEnumerable<string> areas)
         {
             var where = string.Join(" OR ", areas.Select(area => $"[System.AreaPath] UNDER '{area}'"));
             var i = 0;
+            
             while(true)
             {
-                var items = await client.PostAsync(WorkItems.Query(organization).WithQueryParams(("$top", 200)),
+                var items = await _client.PostAsync(WorkItems.Query(organization).WithQueryParams(("$top", 200)),
                     new WorkItemQuery
                     {
                         Query =

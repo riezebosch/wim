@@ -25,6 +25,7 @@ namespace MigrateWorkItems
         {
             _processors = new IFieldsProcessor[] {
                 new NullProcessor(),
+                new ReplaceAttachments(mapper), 
                 new ClassificationNodes(project),
                 new ClassificationNodesResetToTeamProject(project), 
                 new RemoveAutoFields(),
@@ -127,5 +128,6 @@ namespace MigrateWorkItems
     {
         Task WorkItem(int from, Uri to);
         bool TryGetWorkItem(int id, out Uri url);
+        bool TryGetAttachment(Guid from, out Uri to);
     }
 }

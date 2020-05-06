@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,5 +20,13 @@ namespace MigrateWorkItems.Model
 
         public DbSet<Update> Updates { get; set; }
         public DbSet<WorkItemMapping> WorkItemMapping { get; set; }
+        public DbSet<AttachmentMapping> Attachments { get; set; }
+    }
+
+    public class AttachmentMapping
+    {
+        public Guid Id { get; set; }
+        public Uri Url { get; set; }
+        public string FileName { get; set; }
     }
 }

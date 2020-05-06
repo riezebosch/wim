@@ -7,12 +7,11 @@ using MigrateWorkItems.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace MigrateWorkItems
+namespace MigrateWorkItems.Index
 {
-    public static class Indexer
+    public static class WorkItemIndexer
     {
-        public static WorkItemUpdate FromFile(string file) 
-            =>
+        public static WorkItemUpdate FromFile(string file) =>
                 Deserialize(File.ReadAllText(file));
 
         private static WorkItemUpdate Deserialize(string content) => 
@@ -28,15 +27,18 @@ namespace MigrateWorkItems
             foreach (var file in updates.AsParallel())
             {
                 var update = FromFile(file.FullName);
-                await context.Updates.AddAsync(new Model.Update
+                if (context.Updates.Find(update.Id, update.WorkItemId) == null)
                 {
-                    WorkItemId = update.WorkItemId,
-                    Id = update.Id,
-                    ChangeDate = (DateTime?) update.Fields?["System.ChangedDate"].NewValue
-                                 ?? (DateTime?) update.Fields?["System.CreatedDate"].NewValue
-                                 ?? update.RevisedDate,
-                    Relations = update.Relations?.Added?.Count() + update.Relations?.Removed?.Count() ?? 0
-                });
+                    await context.Updates.AddAsync(new Update
+                    {
+                        WorkItemId = update.WorkItemId,
+                        Id = update.Id,
+                        ChangeDate = (DateTime?) update.Fields?["System.ChangedDate"].NewValue
+                                     ?? (DateTime?) update.Fields?["System.CreatedDate"].NewValue
+                                     ?? update.RevisedDate,
+                        Relations = update.Relations?.Added?.Count() + update.Relations?.Removed?.Count() ?? 0
+                    });
+                }
 
                 if (i++ % 1000 == 0)
                 {

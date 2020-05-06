@@ -7,6 +7,7 @@ namespace MigrateWorkItems.Tests
         public string Organization { get; set; }
         public string Token { get; set; }
         public string Project { get; set; }
+        public string[] AreaPaths { get; set; }
 
         public TestConfig()
         {

@@ -20,10 +20,18 @@ namespace MigrateWorkItems
 
         public bool TryGetWorkItem(int id, out Uri url)
         {
-            var item = _context.WorkItemMapping
-                .AsNoTracking()
-                .SingleOrDefault(x => x.Id == id);
+            var item = _context
+                .WorkItemMapping
+                .Find(id);
             return (url = item?.Url) != null;
+        }
+
+        public bool TryGetAttachment(Guid from, out Uri to)
+        {
+            var item = _context
+                .Attachments
+                .Find(from);
+            return (to = item?.Url) != null;
         }
     }
 }
