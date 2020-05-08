@@ -20,7 +20,7 @@ namespace MigrateWorkItems.Tests
 
             try
             {
-                await Clone.RunClone(config.Organization, config.Token, config.AreaPaths, dir, _output.WriteLine);
+                await Clone.Run(config.Organization, config.Token, config.AreaPaths, dir, _output.WriteLine);
             }
             finally
             {

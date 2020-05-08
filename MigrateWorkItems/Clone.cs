@@ -16,7 +16,7 @@ namespace MigrateWorkItems
 {
     public static class Clone
     {
-        public static async Task RunClone(string organization, string token, IEnumerable<string> areas, string output, Action<string> writeLine)
+        public static async Task Run(string organization, string token, IEnumerable<string> areas, string output, Action<string> writeLine)
         {
             var dir = Directory.CreateDirectory(output);
             var client = new Client(token);

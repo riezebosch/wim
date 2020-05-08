@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,49 +62,15 @@ namespace MigrateWorkItems.Console
             WriteLine("Uploading attachments");
             await AttachmentsProcessor.UploadAttachments(client, organization, project, context, output);
 
-            var processor = new WorkItemProcessor(client, organization, project, new FieldsResolver(client, organization, project), new RelationsProcessors(client, mapper), mapper);
 
-            var i = 0;
             try
             {
-                var query = context
-                    .Updates
-                    .AsQueryable()
-                    .Where(x => !x.Done)
-                    .OrderBy(x => x.ChangeDate)
-                    .ThenByDescending(x => x.Relations);
-
-                var total = query.Count();
                 var start = Stopwatch.StartNew();
-                
-                WriteLine("Performing work item updates...");
-                foreach (var item in query)
+                var processor = new WorkItemProcessor(client, organization, project, new FieldsResolver(client, organization, project), new RelationsProcessors(client, mapper), mapper);
+                await foreach (var (position, total) in Push.Run(organization, project, output, context, processor))
                 {
-                    var update = Clone.FromFile(Path.Join(output, "items", item.WorkItemId.ToString(), item.Id + ".json"));
-
-                    try
-                    {
-                        await processor.Process(organization, project, update);
-                        item.Done = true;
-                        context.Updates.Update(item);
-                    }
-                    catch (FlurlHttpException ex)
-                    {
-                        WriteLine(ex.Call.Request.RequestUri.ToString());
-                        WriteLine(ex.Call.RequestBody);
-
-                        if (ex.Call.Response?.Content != null)
-                        {
-                            WriteLine(await ex.Call.Response.Content.ReadAsStringAsync());
-                        }
-
-                        throw;
-                    }
-
-                    await context.SaveChangesAsync();
-                    
                     SetCursorPosition(0, CursorTop);
-                    Write($"[{++i}/{total}] {(start.Elapsed / i * total).Humanize()} remaining");
+                    Write($"[{position}/{total}] {(start.Elapsed / position * total).Humanize()} remaining");
                 }
             }
             finally
@@ -130,7 +97,7 @@ namespace MigrateWorkItems.Console
 
                 cmd.HelpOption();
                 
-                cmd.OnExecuteAsync(c => Clone.RunClone(organization.Value(), token.Value(), areaPaths.Values, output.Value(), WriteLine));
+                cmd.OnExecuteAsync(c => Clone.Run(organization.Value(), token.Value(), areaPaths.Values, output.Value(), WriteLine));
             });
             
             
