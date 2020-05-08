@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AzureDevOpsRest;
+using MigrateWorkItems.Data;
+using MigrateWorkItems.Relations;
 using NSubstitute;
 using Xunit;
 
@@ -44,6 +47,28 @@ namespace MigrateWorkItems.Tests
 
             var parent = Guid.NewGuid().ToString("N");
             await create.IfNotExists("areas", _root, parent, "child");
+        }
+        
+        [Fact]
+        public async Task Wait()
+        {
+            var config = new TestConfig();
+            var client = new Client(config.Token);
+            var parent = string.Join("\\", config.Project, _root, Guid.NewGuid().ToString("N"));
+            
+            var processor = new WorkItemProcessor(client, config.Organization, config.Project, new FieldsResolver(client, config.Organization, config.Project), Substitute.For<IRelationsProcessors>(), Substitute.For<IMapper>());
+            await processor.Process(config.Organization, config.Project, new WorkItemUpdate
+            {
+                Id = 1,
+                Fields = new Dictionary<string, Value>
+                {
+                    ["System.AreaPath"] = new Value { NewValue = parent },
+                    ["System.AssignedTo"] = new Value(),
+                    ["System.WorkItemType"] = new Value { NewValue = "Product Backlog Item" },
+                    ["System.Title"] = new Value { NewValue = "new" },
+                    ["System.Description"] = new Value { NewValue = "" }
+                }
+            });
         }
         
         [Fact]

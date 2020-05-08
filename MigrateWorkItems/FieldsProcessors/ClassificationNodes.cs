@@ -15,41 +15,39 @@ namespace MigrateWorkItems.FieldsProcessors
             _project = project;
             _create = create;
         }
-        public Task Execute(WorkItemUpdate update)
+        public async Task Execute(WorkItemUpdate update)
         {
-            if (update.Fields == null) return Task.CompletedTask;
-            ReplaceTeamProject(update, "System.AreaPath");
-            ReplaceTeamProject(update, "System.IterationPath");
+            if (update.Fields == null) return;
+            await ReplaceTeamProject(update, "System.AreaPath");
+            await ReplaceTeamProject(update, "System.IterationPath");
 
             update.Fields.Remove("System.TeamProject");
             update.Fields.Remove("System.AreaId");
             update.Fields.Remove("System.IterationId");
-            
-            return Task.CompletedTask;
         }
 
-        private void ReplaceTeamProject(WorkItemUpdate first, string field)
+        private async Task ReplaceTeamProject(WorkItemUpdate first, string field)
         {
             if (first.Fields.TryGetValue(field, out var node))
             {
                 var path = Regex.Replace((string)node.NewValue, @"^[^\\]*", _project);
                 first.Fields[field].NewValue = path;
                 
-                CreateIfNotExists(field, path);
+                await CreateIfNotExists(field, path);
             }
         }
 
-        private void CreateIfNotExists(string field, string value)
+        private async Task CreateIfNotExists(string field, string value)
         {
             var path = value.Split('\\').Skip(1).ToArray();
             switch (field)
             {
                 case "System.IterationPath":
-                    _create.IfNotExists("iterations", path);
+                    await _create.IfNotExists("iterations", path);
                     break;
 
                 case "System.AreaPath":
-                    _create.IfNotExists("areas", path);
+                    await _create.IfNotExists("areas", path);
                     break;
             }
         }
