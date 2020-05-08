@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,14 +6,10 @@ using AzureDevOpsRest;
 using Flurl.Http;
 using Humanizer;
 using McMaster.Extensions.CommandLineUtils;
-using McMaster.Extensions.CommandLineUtils.Conventions;
-using MigrateWorkItems;
-using MigrateWorkItems.Index;
 using MigrateWorkItems.Model;
-using Newtonsoft.Json.Linq;
 using static System.Console;
 
-namespace WorkItemMigration.Console
+namespace MigrateWorkItems.Console
 {
     internal class Program
     {
@@ -89,7 +83,7 @@ namespace WorkItemMigration.Console
                 WriteLine("Performing work item updates...");
                 foreach (var item in query)
                 {
-                    var update = WorkItemIndexer.FromFile(Path.Join(output, "items", item.WorkItemId.ToString(), item.Id + ".json"));
+                    var update = Clone.FromFile(Path.Join(output, "items", item.WorkItemId.ToString(), item.Id + ".json"));
 
                     try
                     {

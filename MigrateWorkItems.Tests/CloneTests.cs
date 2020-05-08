@@ -1,11 +1,6 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using AzureDevOpsRest;
-using Flurl.Http;
-using MigrateWorkItems.Index;
-using MigrateWorkItems.Model;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -1,40 +1,29 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using AzureDevOpsRest;
 using AzureDevOpsRest.Data;
 using AzureDevOpsRest.Data.WorkItems;
 using AzureDevOpsRest.Requests;
 using Newtonsoft.Json.Linq;
 
-namespace MigrateWorkItems
+namespace MigrateWorkItems.Save
 {
-    public class SaveWorkItems
+    public class Download
     {
         private readonly IClient _client;
 
-        public SaveWorkItems(IClient client) => _client = client;
+        public Download(IClient client) => _client = client;
 
-        public async IAsyncEnumerable<IAsyncEnumerable<JToken>> To(DirectoryInfo target, string organization, DirectoryInfo attachments, params string[] areas)
+        public async IAsyncEnumerable<JToken> To(string organization, params string[] areas)
         {
             await foreach (var item in QueryAllWorkItems(organization, areas))
             {
-                yield return SaveUpdates(_client, item, target);
-            }
-        }
-        
-        private static async IAsyncEnumerable<JToken> SaveUpdates(IClient client, WorkItemRef item, DirectoryInfo items)
-        {
-            var itemDir = items.CreateSubdirectory(item.Id.ToString());
-            await foreach (var update in client.GetAsync(
-                new UriRequest<JToken>(new Uri(item.Url + "/updates"), "5.1").AsEnumerable()))
-            {
-                var path = Path.Combine(itemDir.FullName, update.SelectToken("id").Value<string>() + ".json");
-                File.WriteAllText(path, update.ToString());
-
-                yield return update;
+                await foreach (var update in _client.GetAsync(
+                    new UriRequest<JToken>(new Uri(item.Url + "/updates"), "5.1").AsEnumerable()))
+                {
+                    yield return update;
+                }
             }
         }
 

@@ -11,12 +11,15 @@ namespace MigrateWorkItems.FieldsProcessors
 
         public Task Execute(WorkItemUpdate item)
         {
-            if (item.Fields != null 
-                && item.Fields.TryGetValue("System.Description", out var field)
-                && ((string) field.NewValue).TryGetAttachmentUrl(out var uri, out var id, out _)
-                && _mapper.TryGetAttachment(id, out var to))
+            if (item.Fields != null && item.Fields.TryGetValue("System.Description", out var field))
             {
-                field.NewValue = ((string) field.NewValue).Replace(uri.ToString(), to.ToString());
+                foreach (var attachment in ((string) field.NewValue).GetAttachments())
+                {
+                    if (_mapper.TryGetAttachment(attachment.Id, out var to))
+                    {
+                        field.NewValue = ((string) field.NewValue).Replace(attachment.Url.ToString(), to.ToString());
+                    }
+                }
             }
             
             return Task.CompletedTask;

@@ -21,7 +21,11 @@ namespace MigrateWorkItems.Tests
         public MigrationContext Context { get; }
 
 
-        public Task InitializeAsync() => Context.Database.EnsureCreatedAsync();
+        public async Task InitializeAsync()
+        {
+            await Context.Database.EnsureDeletedAsync();
+            await Context.Database.EnsureCreatedAsync();
+        }
 
         public async Task DisposeAsync()
         {

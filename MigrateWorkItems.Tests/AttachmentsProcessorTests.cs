@@ -41,9 +41,10 @@ namespace MigrateWorkItems.Tests
                 var project = config.Project;
 
                 await AttachmentsProcessor.UploadAttachments(client, organization, project, _context, "");
+                await AttachmentsProcessor.UploadAttachments(client, organization, project, _context, "");
 
                 await client
-                    .Received()
+                    .Received(1)
                     .PostAsync(Arg.Any<Request<AttachmentReference>>(), Arg.Any<Stream>());
 
                 _context
@@ -52,25 +53,6 @@ namespace MigrateWorkItems.Tests
                     .Url
                     .Should()
                     .Be($"https://some-url/{newId}");
-        }
-
-        [Fact]
-        public async Task Skips()
-        {
-            var client = Substitute.For<IClient>();
-
-                _context.Attachments.Add(new AttachmentMapping
-                {
-                    Id = OldId,
-                    Url = new Uri("https://www.google.com")
-                });
-                await _context.SaveChangesAsync();
-
-                await AttachmentsProcessor.UploadAttachments(client, "", "", _context, "");
-
-                await client
-                    .DidNotReceive()
-                    .PostAsync(Arg.Any<Request<AttachmentReference>>(), Arg.Any<Stream>());
         }
     }
 }

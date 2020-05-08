@@ -30,7 +30,15 @@ namespace MigrateWorkItems.Tests.FieldProcessors
                 .Fields
                 .Keys
                 .Should()
-                .BeEmpty();
+                .BeSubsetOf(new[]
+                {
+                    "System.RevisedDate",
+                    "System.ChangedDate",
+                    "System.AuthorizedAs",
+                    "System.AuthorizedDate",
+                    "System.CreatedDate",
+                    "System.CreatedBy"
+                });
         }
 
         private static async Task<IDictionary<string, Value>> ReadOnlyFields(TestConfig config, IClient client)

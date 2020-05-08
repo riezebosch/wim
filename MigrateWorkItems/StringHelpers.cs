@@ -1,27 +1,23 @@
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using MigrateWorkItems.Model;
 
 namespace MigrateWorkItems
 {
     public static class StringHelpers
     {
-        public static bool TryGetAttachmentUrl(this string description, out Uri url, out Guid id, out string name)
+        public static IEnumerable<AttachmentMapping> GetAttachments(this string description)
         {
-            var match = Regex.Match(description, @"https://dev\.azure\.com/.+?/.+?/_apis/wit/attachments/(?<id>[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\?fileName=(?<filename>[^\""]+)");
-            if (match.Success)
+            var matches = Regex.Matches(description, @"https://dev\.azure\.com/.+?/.+?/_apis/wit/attachments/(?<id>[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\?fileName=[^\""]+");
+            foreach (Match match in matches)
             {
-                url = new Uri(match.Value);
-                id = new Guid(match.Groups["id"].Value);
-                name = match.Groups["filename"].Value;
-            
-                return true;
+                yield return new AttachmentMapping
+                {
+                    Id = new Guid(match.Groups["id"].Value),
+                    Url = new Uri(match.Value)
+                };
             }
-
-            url = null;
-            id = Guid.Empty;
-            name = null;
-            
-            return false;
         }
     }
 }

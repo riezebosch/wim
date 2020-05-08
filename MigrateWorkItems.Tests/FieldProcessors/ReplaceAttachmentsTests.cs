@@ -29,7 +29,7 @@ namespace MigrateWorkItems.Tests.FieldProcessors
                 {
                     ["System.Description"] = new Value
                     {
-                        NewValue = "https://dev.azure.com/new/00000000-a70f-4977-9335-85f0da463818/_apis/wit/attachments/f434ff22-0000-4026-852d-a98470dba8b0"
+                        NewValue = "https://dev.azure.com/new/00000000-a70f-4977-9335-85f0da463818/_apis/wit/attachments/f434ff22-0000-4026-852d-a98470dba8b0?fileName=eenhoorn.png"
                     }
                 }
             };

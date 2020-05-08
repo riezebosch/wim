@@ -1,5 +1,6 @@
 using System;
 using FluentAssertions;
+using MigrateWorkItems.Model;
 using Xunit;
 
 namespace MigrateWorkItems.Tests
@@ -12,18 +13,41 @@ namespace MigrateWorkItems.Tests
             var description =
                 "<div><img src=\"https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/attachments/f434ff22-1f72-4026-852d-a98470dba8b0?fileName=eenhoorn.png\" alt=eenhoorn.png><br></div>";
 
-            description.TryGetAttachmentUrl(out var url, out var id, out var name)
+            description.GetAttachments()
                 .Should()
-                .BeTrue();
-            
-            url.Should()
-                .Be("https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/attachments/f434ff22-1f72-4026-852d-a98470dba8b0?fileName=eenhoorn.png");
-            
-            id.Should()
-                .Be("f434ff22-1f72-4026-852d-a98470dba8b0");
+                .BeEquivalentTo(
+                    new AttachmentMapping
+                    {
+                        Id = new Guid("f434ff22-1f72-4026-852d-a98470dba8b0"),
+                        Url = new Uri(
+                            "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/attachments/f434ff22-1f72-4026-852d-a98470dba8b0?fileName=eenhoorn.png")
+                    });
+        }
+        
+        [Fact]
+        public void Mutiple()
+        {
+            var description =
+                "<div>" +
+                "   <img src=\"https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/attachments/f434ff22-1f72-4026-852d-a98470dba8b0?fileName=eenhoorn.png\" alt=eenhoorn.png><br>" +
+                "   <img src=\"https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/attachments/f04713ec-c2cf-4bc9-ae27-fe3fe26995d2?fileName=twee.png\" alt=twee.png><br>" +
+                "</div>";
 
-            name.Should()
-                .Be("eenhoorn.png");
+            description.GetAttachments()
+                .Should()
+                .BeEquivalentTo(
+                    new AttachmentMapping
+                    {
+                        Id = new Guid("f434ff22-1f72-4026-852d-a98470dba8b0"),
+                        Url = new Uri(
+                            "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/attachments/f434ff22-1f72-4026-852d-a98470dba8b0?fileName=eenhoorn.png")
+                    },
+                    new AttachmentMapping
+                    {
+                        Id = new Guid("f04713ec-c2cf-4bc9-ae27-fe3fe26995d2"),
+                        Url = new Uri(
+                            "https://dev.azure.com/manuel/eb082604-a70f-4977-9335-85f0da463818/_apis/wit/attachments/f04713ec-c2cf-4bc9-ae27-fe3fe26995d2?fileName=twee.png")
+                    });
         }
         
         [Fact]
@@ -32,37 +56,9 @@ namespace MigrateWorkItems.Tests
             var description =
                 "<div>hi</div>";
 
-            description.TryGetAttachmentUrl(out var url, out var id, out var name)
+            description.GetAttachments()
                 .Should()
-                .BeFalse();
-            
-            url.Should()
-                .Be(default);
-            
-            id.Should()
-                .Be(Guid.Empty);
-
-            name.Should().BeNull();
-        }
-
-        [Fact]
-        public void Stop()
-        {
-            var description =
-                "<div>Company details:</div><div><img src=\"https://dev.azure.com/unit4/81dea1dd-cac5-4d61-81a3-b2e7ff0c64bf/_apis/wit/attachments/f29f71de-117c-4c09-9602-14296d411f3a?fileName=image.png\"><br></div><div>Organization:</div><div><img src=\"https://dev.azure.com/unit4/81dea1dd-cac5-4d61-81a3-b2e7ff0c64bf/_apis/wit/attachments/f49f2db6-d418-4f30-b56c-abd8228b815c?fileName=image.png\"><br></div>";
-            
-            description.TryGetAttachmentUrl(out var url, out var id, out var name)
-                .Should()
-                .BeTrue();
-            
-            url.Should()
-                .Be("https://dev.azure.com/unit4/81dea1dd-cac5-4d61-81a3-b2e7ff0c64bf/_apis/wit/attachments/f29f71de-117c-4c09-9602-14296d411f3a?fileName=image.png");
-            
-            id.Should()
-                .Be("f29f71de-117c-4c09-9602-14296d411f3a");
-
-            name.Should()
-                .Be("image.png");
+                .BeEmpty();
         }
     }
 }

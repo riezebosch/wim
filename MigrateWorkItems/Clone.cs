@@ -5,9 +5,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using AzureDevOpsRest;
 using Flurl.Http;
-using MigrateWorkItems.Index;
+using MigrateWorkItems.Data;
 using MigrateWorkItems.Model;
+using MigrateWorkItems.Save;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace MigrateWorkItems
 {
@@ -15,41 +18,33 @@ namespace MigrateWorkItems
     {
         public static async Task RunClone(string organization, string token, IEnumerable<string> areas, string output, Action<string> writeLine)
         {
-            var client = new Client(token);
             var dir = Directory.CreateDirectory(output);
-            var items = dir.CreateSubdirectory("items");
-            var attachments = dir.CreateSubdirectory("attachments");
-            
+            var client = new Client(token);
+            await using var context = new MigrationContext(dir.FullName);
+            await context.Database.EnsureCreatedAsync();
+
             try
             {
                 writeLine("Downloading work item updates...");
-                var save = new SaveWorkItems(client);
-                var updates = new List<JToken>();
-                await foreach (var item in save.To(items, organization, attachments,
-                    areas.ToArray()))
+                var download = new Download(client);
+                var saveWorkItems = new SaveWorkItems(dir.CreateSubdirectory("items"));
+                var saveAttachments = new SaveAttachments(client, dir.CreateSubdirectory("attachments"));
+                
+                await foreach (var update in download.To(organization, areas.ToArray()))
                 {
-                    await foreach (var update in item)
+                    saveWorkItems.To(update);
+                    await Save(context, update);
+                    
+                    await foreach (var attachment in saveAttachments.To(update))
                     {
-                        updates.AddRange(update);
+                        context.Attachments.Add(attachment);
+                        await context.SaveChangesAsync();
                     }
                 }
                 
-                await using var context = new MigrationContext(dir.FullName);
-                await context.Database.EnsureCreatedAsync();
-                
-                writeLine("Downloading attachments...");
-                var save2 = new SaveAttachments(client);
-                await foreach (var attachment in save2.To(attachments, updates))
-                {
-                    context.Attachments.Add(attachment);
-                    await context.SaveChangesAsync();
-                }
-                
-                
-                
-                writeLine("Indexing updates...");
-                await WorkItemIndexer.Index(context, items);
-                
+                // writeLine("Indexing updates...");
+                // await WorkItemIndexer.Index(context, dir.CreateSubdirectory("items"));
+                //
                 // WriteLine("Indexing attachments...");
                 // await AttachmentIndexer.Index(context, attachments);
             }
@@ -66,5 +61,27 @@ namespace MigrateWorkItems
                 throw;
             }
         }
+
+        private static async Task Save(MigrationContext context, JToken update)
+        {
+            var id = (int)update.SelectToken("id");
+            var workItemId = (int)update.SelectToken("workItemId");
+            
+            if (context.Updates.Find(id, workItemId) == null)
+            {
+                await context.Updates.AddAsync(new Update
+                {
+                    Id = id,
+                    WorkItemId = workItemId,
+                    ChangeDate = update.ChangeDate(),
+                    Relations = update.Relations()
+                });
+            }
+        }
+
+        public static WorkItemUpdate FromFile(string file) => Deserialize(File.ReadAllText(file));
+
+        private static WorkItemUpdate Deserialize(string content) => 
+            JsonConvert.DeserializeObject<WorkItemUpdate>(content, new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()});
     }
 }
