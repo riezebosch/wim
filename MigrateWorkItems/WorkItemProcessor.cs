@@ -18,17 +18,16 @@ namespace MigrateWorkItems
         private readonly IMapper _mapper;
         private readonly IClient _client;
 
-        public WorkItemProcessor(string project,
-            IClient client,
-            IFieldsResolver resolver, 
+        public WorkItemProcessor(IClient client,
+            string organization, string project,
+            IFieldsResolver resolver,
             IRelationsProcessors relations,
             IMapper mapper)
         {
             _processors = new IFieldsProcessor[] {
                 new NullProcessor(),
                 new ReplaceAttachments(mapper), 
-                new ClassificationNodes(project),
-                new ClassificationNodesResetToTeamProject(project), 
+                new ClassificationNodes(project, new CreateClassificationNodes(client, organization, project)),
                 new RemoveAutoFields(),
                 new RemoveNotFoundFields(resolver), 
                 new ReadOnlyFields(),

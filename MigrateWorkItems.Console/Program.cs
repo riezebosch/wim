@@ -61,12 +61,7 @@ namespace MigrateWorkItems.Console
             WriteLine("Uploading attachments");
             await AttachmentsProcessor.UploadAttachments(client, organization, project, context, output);
 
-            var processor = new WorkItemProcessor(
-                project,
-                client,
-                new FieldsResolver(client, organization, project), 
-                new RelationsProcessors(client, mapper),
-                mapper);
+            var processor = new WorkItemProcessor(client, organization, project, new FieldsResolver(client, organization, project), new RelationsProcessors(client, mapper), mapper);
 
             var i = 0;
             try
