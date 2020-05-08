@@ -7,6 +7,7 @@ using AzureDevOpsRest.Requests;
 using Microsoft.AspNetCore.JsonPatch;
 using MigrateWorkItems.Data;
 using MigrateWorkItems.FieldsProcessors;
+using MigrateWorkItems.Relations;
 
 namespace MigrateWorkItems
 {

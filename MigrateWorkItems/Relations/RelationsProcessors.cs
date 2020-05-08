@@ -3,7 +3,7 @@ using AzureDevOpsRest;
 using Microsoft.AspNetCore.JsonPatch;
 using MigrateWorkItems.Data;
 
-namespace MigrateWorkItems
+namespace MigrateWorkItems.Relations
 {
     public interface IRelationsProcessors
     {
@@ -16,7 +16,12 @@ namespace MigrateWorkItems
 
         public RelationsProcessors(IClient client, IMapper mapper)
         {
-            _processors = new IRelationsProcessor[] { new AddRelations(mapper), new RemoveRelations(client, mapper) };
+            _processors = new IRelationsProcessor[]
+            {
+                new AddWorkItemRelations(mapper), 
+                new RemoveWorkItemRelations(client, mapper),
+                new AddAttachedFiles(mapper), 
+            };
         }
 
         public async Task Execute(JsonPatchDocument document, WorkItemUpdate update)

@@ -2,13 +2,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
 using MigrateWorkItems.Data;
 
-namespace MigrateWorkItems
+namespace MigrateWorkItems.Relations
 {
-    internal class AddRelations : IRelationsProcessor
+    public class AddWorkItemRelations : IRelationsProcessor
     {
         private readonly IMapper _mapper;
 
-        public AddRelations(IMapper mapper) => _mapper = mapper;
+        public AddWorkItemRelations(IMapper mapper) => _mapper = mapper;
 
         public Task Execute(JsonPatchDocument document, WorkItemUpdate update)
         {

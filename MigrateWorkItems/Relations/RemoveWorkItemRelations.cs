@@ -5,14 +5,14 @@ using AzureDevOpsRest.Data.WorkItems;
 using Microsoft.AspNetCore.JsonPatch;
 using MigrateWorkItems.Data;
 
-namespace MigrateWorkItems
+namespace MigrateWorkItems.Relations
 {
-    internal class RemoveRelations : IRelationsProcessor
+    public class RemoveWorkItemRelations : IRelationsProcessor
     {
         private readonly IClient _client;
         private readonly IMapper _mapper;
 
-        public RemoveRelations(IClient client, IMapper mapper)
+        public RemoveWorkItemRelations(IClient client, IMapper mapper)
         {
             _client = client;
             _mapper = mapper;
@@ -20,6 +20,8 @@ namespace MigrateWorkItems
 
         public async Task Execute(JsonPatchDocument document, WorkItemUpdate update)
         {
+            if (update.Relations?.Removed == null) return;
+
             var relations = await GetItemRelations(update);
             foreach (var relation in update.Relations.Removed)
             {
@@ -36,8 +38,7 @@ namespace MigrateWorkItems
 
         private async Task<Relation[]> GetItemRelations(WorkItemUpdate update)
         {
-            if (update.Relations?.Removed == null ||
-                !_mapper.TryGetWorkItem(update.WorkItemId, out var target)) return Array.Empty<Relation>();
+            if (!_mapper.TryGetWorkItem(update.WorkItemId, out var target)) return Array.Empty<Relation>();
 
             var item = await _client.GetAsync(new UriRequest<WorkItem>(target, "5.1")
                 .WithQueryParams(("$expand", "relations")));

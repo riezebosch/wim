@@ -7,6 +7,7 @@ using Flurl.Http;
 using Humanizer;
 using McMaster.Extensions.CommandLineUtils;
 using MigrateWorkItems.Model;
+using MigrateWorkItems.Relations;
 using static System.Console;
 
 namespace MigrateWorkItems.Console
