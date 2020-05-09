@@ -29,6 +29,6 @@
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/riezebosch/wim.git</RepositoryUrl>
-        <Version>0.0.6</Version>
+        <Version>0.0.7</Version>
     </PropertyGroup>
 </Project>

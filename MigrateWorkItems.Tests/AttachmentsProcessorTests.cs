@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using AzureDevOpsRest;
 using AzureDevOpsRest.Requests;
@@ -22,7 +23,6 @@ namespace MigrateWorkItems.Tests
         public async Task Test()
         {
             var config = new TestConfig();
-
             var newId = Guid.NewGuid();
 
             var client = Substitute.For<IClient>();
@@ -40,8 +40,11 @@ namespace MigrateWorkItems.Tests
                 var organization = config.Organization;
                 var project = config.Project;
 
-                await AttachmentsProcessor.UploadAttachments(client, organization, project, _context, "");
-                await AttachmentsProcessor.UploadAttachments(client, organization, project, _context, "");
+                AttachmentsProcessor.UploadAttachments(client, organization, project, _context, "").ToEnumerable();
+                AttachmentsProcessor.UploadAttachments(client, organization, project, _context, "")
+                    .ToEnumerable()
+                    .Should()
+                    .BeEmpty();
 
                 await client
                     .Received(1)

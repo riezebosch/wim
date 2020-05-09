@@ -59,24 +59,33 @@ namespace MigrateWorkItems.Console
             
             var mapper = new Mapper(context);
 
-            WriteLine("Uploading attachments");
-            await AttachmentsProcessor.UploadAttachments(client, organization, project, context, output);
-
+            WriteLine("Uploading attachments...");
+            var start = Stopwatch.StartNew();
+            
+            await foreach (var (position, total) in AttachmentsProcessor.UploadAttachments(client, organization, project, context, output))
+            {
+                SetCursorPosition(0, CursorTop);
+                Write($"[{position}/{total}] {(start.Elapsed / position * (total - position)).Humanize()} remaining");
+            }
 
             try
             {
-                var start = Stopwatch.StartNew();
+                start.Restart();
+                WriteLine("Replaying operations...");
+                
                 var processor = new WorkItemProcessor(client, organization, project, new FieldsResolver(client, organization, project), new RelationsProcessors(client, mapper), mapper);
                 await foreach (var (position, total) in Push.Run(organization, project, output, context, processor))
                 {
                     SetCursorPosition(0, CursorTop);
-                    Write($"[{position}/{total}] {(start.Elapsed / position * total).Humanize()} remaining");
+                    Write($"[{position}/{total}] {(start.Elapsed / position * (total - position)).Humanize()} remaining");
                 }
             }
             finally
             {
                 await context.SaveChangesAsync();
             }
+
+            WriteLine("Done.");
         }
 
         private static void AddCloneCommand(CommandLineApplication app)
