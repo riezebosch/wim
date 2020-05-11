@@ -67,7 +67,7 @@ namespace MigrateWorkItems.Tests
             });
 
             update
-                .Relations()
+                .RelationsAdded()
                 .Should()
                 .Be(0);
         }
@@ -90,7 +90,7 @@ namespace MigrateWorkItems.Tests
             });
 
             update
-                .Relations()
+                .RelationsAdded()
                 .Should()
                 .Be(1);
         }
@@ -113,7 +113,7 @@ namespace MigrateWorkItems.Tests
             });
 
             update
-                .Relations()
+                .RelationsRemoved()
                 .Should()
                 .Be(1);
         }

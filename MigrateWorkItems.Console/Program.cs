@@ -106,7 +106,15 @@ namespace MigrateWorkItems.Console
 
                 cmd.HelpOption();
                 
-                cmd.OnExecuteAsync(c => Clone.Run(organization.Value(), token.Value(), areaPaths.Values, output.Value(), WriteLine));
+                cmd.OnExecuteAsync(async c =>
+                {
+                    WriteLine("Downloading work item updates and attachments...");
+                    await foreach (var (totalItems, totalAttachments) in Clone.Run(organization.Value(), token.Value(), areaPaths.Values, output.Value()))
+                    {
+                        SetCursorPosition(0, CursorTop);
+                        Write($"{totalItems} work items and {totalAttachments} attachments");
+                    }
+                });
             });
             
             

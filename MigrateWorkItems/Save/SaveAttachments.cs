@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AzureDevOpsRest;
+using MigrateWorkItems.Data;
 using MigrateWorkItems.Model;
 using Newtonsoft.Json.Linq;
 
@@ -10,7 +11,7 @@ namespace MigrateWorkItems.Save
 {
     public interface ISaveAttachments
     {
-        IAsyncEnumerable<AttachmentMapping> To(JToken update);
+        IAsyncEnumerable<AttachmentReference> To(JToken update);
     }
 
     public class SaveAttachments : ISaveAttachments
@@ -26,7 +27,7 @@ namespace MigrateWorkItems.Save
         }
 
 
-        public async IAsyncEnumerable<AttachmentMapping> To(JToken update)
+        public async IAsyncEnumerable<AttachmentReference> To(JToken update)
         {
             foreach (var attachment in FindAttachments(update))
             {
@@ -46,7 +47,7 @@ namespace MigrateWorkItems.Save
             }
         }
 
-        private static IEnumerable<AttachmentMapping> FindAttachments(JToken update)
+        private static IEnumerable<AttachmentReference> FindAttachments(JToken update)
         {
             var description = (string) update.SelectToken("fields.['System.Description'].newValue");
             if (description != null)
@@ -60,7 +61,7 @@ namespace MigrateWorkItems.Save
             var relations = update.SelectTokens("relations.added[?(@.rel=='AttachedFile')].url").Values<string>();
             foreach (var uri in relations.Select(x => new Uri(x)))
             {
-                yield return new AttachmentMapping
+                yield return new AttachmentReference
                 {
                     Id = new Guid(uri.Segments.Last()),
                     Url = uri

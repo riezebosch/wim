@@ -1,6 +1,8 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -8,25 +10,23 @@ namespace MigrateWorkItems.Tests
 {
     public class CloneTests
     {
-        private readonly ITestOutputHelper _output;
-
-        public CloneTests(ITestOutputHelper output) => _output = output;
-
         [Fact]
-        public async Task TestFromJson()
+        public void TestFromJson()
         {
             var config = new TestConfig();
             var dir = Guid.NewGuid().ToString("N");
 
             try
             {
-                await Clone.Run(config.Organization, config.Token, config.AreaPaths, dir, _output.WriteLine);
+                Clone.Run(config.Organization, config.Token, config.AreaPaths, dir)
+                    .ToEnumerable()
+                    .Should()
+                    .NotBeEmpty();
             }
             finally
             {
                 Directory.Delete(dir, true);
             }
-
         }
     }
 }

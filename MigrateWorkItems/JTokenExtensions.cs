@@ -13,8 +13,10 @@ namespace MigrateWorkItems
                    ?? (DateTime)update.SelectToken("revisedDate");
         }
 
-        public static int Relations(this JToken update) => 
-            update.SelectTokens("relations.added[*]").Count() + 
+        public static int RelationsAdded(this JToken update) =>
+            update.SelectTokens("relations.added[*]").Count();
+        
+        public static int RelationsRemoved(this JToken update) =>
             update.SelectTokens("relations.removed[*]").Count();
     }
 }

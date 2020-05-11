@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AzureDevOpsRest;
 using AzureDevOpsRest.Data;
 using AzureDevOpsRest.Data.WorkItems;
 using AzureDevOpsRest.Requests;
+using Microsoft.EntityFrameworkCore.Internal;
 using Newtonsoft.Json.Linq;
 
 namespace MigrateWorkItems.Save
@@ -17,14 +19,41 @@ namespace MigrateWorkItems.Save
 
         public async IAsyncEnumerable<JToken> To(string organization, params string[] areas)
         {
+            var tasks = new HashSet<Task<IEnumerable<JToken>>>();
             await foreach (var item in QueryAllWorkItems(organization, areas))
             {
-                await foreach (var update in _client.GetAsync(
-                    new UriRequest<JToken>(new Uri(item.Url + "/updates"), "5.1").AsEnumerable()))
+                tasks.Add(DownloadUpdates(item));
+                while (tasks.Count > 50)
                 {
-                    yield return update;
+                    while (tasks.Count > 25)
+                    {
+                        var task = await Task.WhenAny(tasks);
+                        foreach (var update in await task)
+                        {
+                            yield return update;
+                        }
+
+                        tasks.Remove(task);
+                    }
                 }
             }
+
+            foreach (var update in (await Task.WhenAll(tasks)).SelectMany(x => x))
+            {
+                yield return update;
+            }
+        }
+
+        private async Task<IEnumerable<JToken>> DownloadUpdates(WorkItemRef item)
+        {
+            var updates = new List<JToken>();
+            await foreach (var update in _client.GetAsync(
+                new UriRequest<JToken>(new Uri(item.Url + "/updates"), "5.1").AsEnumerable()))
+            {
+                updates.Add(update);
+            }
+
+            return updates;
         }
 
         private async IAsyncEnumerable<WorkItemRef> QueryAllWorkItems(string organization, IEnumerable<string> areas)

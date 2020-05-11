@@ -15,7 +15,8 @@ namespace MigrateWorkItems
                 .AsQueryable()
                 .Where(x => !x.Done)
                 .OrderBy(x => x.ChangeDate)
-                .ThenByDescending(x => x.Relations);
+                .ThenByDescending(x => x.RelationsAdded + x.RelationsRemoved)
+                .ThenBy(x => x.RelationsRemoved);
 
             var position = 0;
             var total = query.Count();

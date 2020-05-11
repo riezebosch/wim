@@ -40,7 +40,10 @@ namespace MigrateWorkItems.Tests
                 var organization = config.Organization;
                 var project = config.Project;
 
-                AttachmentsProcessor.UploadAttachments(client, organization, project, _context, "").ToEnumerable();
+                AttachmentsProcessor.UploadAttachments(client, organization, project, _context, "")
+                    .ToEnumerable()
+                    .Should()
+                    .NotBeEmpty();
                 AttachmentsProcessor.UploadAttachments(client, organization, project, _context, "")
                     .ToEnumerable()
                     .Should()

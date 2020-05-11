@@ -8,6 +8,7 @@ namespace MigrateWorkItems.Model
         public int WorkItemId { get; set; }
         public DateTime ChangeDate { get; set; }
         public bool Done { get; set; }
-        public int Relations { get; set; }
+        public int RelationsAdded { get; set; }
+        public int RelationsRemoved { get; set; }
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,50 +15,42 @@ namespace MigrateWorkItems
 {
     public static class Clone
     {
-        public static async Task Run(string organization, string token, IEnumerable<string> areas, string output, Action<string> writeLine)
+        public static async IAsyncEnumerable<(int totalItems, int totalAttachments)> Run(string organization,
+            string token, IEnumerable<string> areas, string output)
         {
             var dir = Directory.CreateDirectory(output);
             var client = new Client(token);
             await using var context = new MigrationContext(dir.FullName);
             await context.Database.EnsureCreatedAsync();
 
-            try
-            {
-                writeLine("Downloading work item updates...");
-                var download = new Download(client);
-                var saveWorkItems = new SaveWorkItems(dir.CreateSubdirectory("items"));
-                var saveAttachments = new SaveAttachments(client, dir.CreateSubdirectory("attachments"));
-                
-                await foreach (var update in download.To(organization, areas.ToArray()))
-                {
-                    saveWorkItems.To(update);
-                    await Save(context, update);
-                    
-                    await foreach (var attachment in saveAttachments.To(update))
-                    {
-                        context.Attachments.Add(attachment);
-                        await context.SaveChangesAsync();
-                    }
-                }
-                
-                // writeLine("Indexing updates...");
-                // await WorkItemIndexer.Index(context, dir.CreateSubdirectory("items"));
-                //
-                // WriteLine("Indexing attachments...");
-                // await AttachmentIndexer.Index(context, attachments);
-            }
-            catch (FlurlHttpException ex)
-            {
-                writeLine(ex.Call.Request.RequestUri.ToString());
-                writeLine(ex.Call.RequestBody);
+            var download = new Download(client);
+            var saveWorkItems = new SaveWorkItems(dir.CreateSubdirectory("items"));
+            var saveAttachments = new SaveAttachments(client, dir.CreateSubdirectory("attachments"));
 
-                if (ex.Call.Response?.Content != null)
+            var totalItems = 0;
+            var totalAttachments = 0;
+            await foreach (var update in download.To(organization, areas.ToArray()))
+            {
+                saveWorkItems.To(update);
+                await Save(context, update);
+
+                await foreach (var attachment in saveAttachments.To(update))
                 {
-                    writeLine(await ex.Call.Response.Content.ReadAsStringAsync());
+                    context.Attachments.Add(new AttachmentMapping { Id = attachment.Id});
+                    totalAttachments++;
                 }
 
-                throw;
+                totalItems++;
+
+                if (totalItems % 1000 == 0)
+                {
+                    await context.SaveChangesAsync();
+                }
+            
+                yield return (totalItems, totalAttachments);
             }
+
+            await context.SaveChangesAsync();
         }
 
         private static async Task Save(MigrationContext context, JToken update)
@@ -74,7 +65,8 @@ namespace MigrateWorkItems
                     Id = id,
                     WorkItemId = workItemId,
                     ChangeDate = update.ChangeDate(),
-                    Relations = update.Relations()
+                    RelationsAdded = update.RelationsAdded(),
+                    RelationsRemoved = update.RelationsRemoved()
                 });
             }
         }
