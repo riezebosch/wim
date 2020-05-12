@@ -6,7 +6,6 @@ using AzureDevOpsRest;
 using AzureDevOpsRest.Data;
 using AzureDevOpsRest.Data.WorkItems;
 using AzureDevOpsRest.Requests;
-using Microsoft.EntityFrameworkCore.Internal;
 using Newtonsoft.Json.Linq;
 
 namespace MigrateWorkItems.Save

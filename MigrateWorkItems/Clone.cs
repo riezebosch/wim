@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AzureDevOpsRest;
-using Flurl.Http;
 using MigrateWorkItems.Data;
 using MigrateWorkItems.Model;
 using MigrateWorkItems.Save;

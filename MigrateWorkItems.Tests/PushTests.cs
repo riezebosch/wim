@@ -1,9 +1,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using AzureDevOpsRest;
-using MigrateWorkItems.Model;
 using MigrateWorkItems.Relations;
-using MigrateWorkItems.Save;
 using NSubstitute;
 using Xunit;
 

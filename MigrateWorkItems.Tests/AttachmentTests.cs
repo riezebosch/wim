@@ -1,7 +1,6 @@
 using System;
 using FluentAssertions;
 using MigrateWorkItems.Data;
-using MigrateWorkItems.Model;
 using Xunit;
 
 namespace MigrateWorkItems.Tests

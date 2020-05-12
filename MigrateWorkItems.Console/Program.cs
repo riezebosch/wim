@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
 using AzureDevOpsRest;
-using Flurl.Http;
 using Humanizer;
 using McMaster.Extensions.CommandLineUtils;
 using MigrateWorkItems.Model;

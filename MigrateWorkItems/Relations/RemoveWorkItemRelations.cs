@@ -27,12 +27,18 @@ namespace MigrateWorkItems.Relations
             {
                 if (!relation.Url.ToWorkItemId(out var id)) continue;
                 if (!_mapper.TryGetWorkItem(id, out var url)) continue;
-                
-                var index = Array.FindIndex(relations, x => x.Url == url && x.Rel == relation.Rel);
-                if (index >= 0)
-                {
-                    document.Remove($"/relations/{index}");
-                }
+
+                relation.Url = url;
+                Remove(document, relations, relation);
+            }
+        }
+
+        private static void Remove(JsonPatchDocument document, Relation[] relations, Relation relation)
+        {
+            var index = Array.FindIndex(relations, x => x.Url == relation.Url && x.Rel == relation.Rel);
+            if (index >= 0)
+            {
+                document.Remove($"/relations/{index}");
             }
         }
 

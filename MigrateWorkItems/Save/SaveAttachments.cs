@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using AzureDevOpsRest;
 using MigrateWorkItems.Data;
-using MigrateWorkItems.Model;
 using Newtonsoft.Json.Linq;
 
 namespace MigrateWorkItems.Save

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using AzureDevOpsRest.Data.WorkItems;
 using FluentAssertions;
 using Microsoft.AspNetCore.JsonPatch;
