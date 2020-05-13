@@ -54,15 +54,15 @@ namespace AzureDevOpsRest
                     .ReceiveJson<TData>();
             }
             return Policy
-                .Handle<FlurlHttpException>(ex => ex.Call.HttpStatus == HttpStatusCode.InternalServerError)
-                .WaitAndRetryAsync(10, x => TimeSpan.FromSeconds(x * x))
+                .Handle<FlurlHttpException>(ex => ex.Call.HttpStatus >= (HttpStatusCode)500 && ex.Call.HttpStatus <= (HttpStatusCode)599)
+                .WaitAndRetryAsync(10, x => TimeSpan.FromSeconds(Math.Pow(2, x)))
                 .ExecuteAsync(() => Setup(request).PostJsonAsync(data).ReceiveJson<TData>());
         }
 
         public Task<TData> PatchAsync<TData>(IRequest<TData> request, JsonPatchDocument document) =>
             Policy
-                .Handle<FlurlHttpException>(ex => ex.Call.HttpStatus == HttpStatusCode.InternalServerError)
-                .WaitAndRetryAsync(5, x => TimeSpan.FromSeconds(x * x))
+                .Handle<FlurlHttpException>(ex => ex.Call.HttpStatus >= (HttpStatusCode)500 && ex.Call.HttpStatus <= (HttpStatusCode)599)
+                .WaitAndRetryAsync(5, x => TimeSpan.FromSeconds(Math.Pow(2, x)))
                 .ExecuteAsync(() => Setup(request).PatchJsonAsync(document).ReceiveJson<TData>());
     }
 }

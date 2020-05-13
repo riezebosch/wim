@@ -35,8 +35,8 @@ namespace AzureDevOpsRest.Requests
 
         private static Task<HttpResponseMessage> WithRetry(IFlurlRequest request) => 
             Policy
-                .Handle<FlurlHttpException>(ex => ex.Call.HttpStatus >= HttpStatusCode.InternalServerError && ex.Call.HttpStatus <= (HttpStatusCode)599)
-                .WaitAndRetryAsync(10, x => TimeSpan.FromSeconds(x * x))
+                .Handle<FlurlHttpException>(ex => ex.Call.HttpStatus >= (HttpStatusCode)500 && ex.Call.HttpStatus <= (HttpStatusCode)599)
+                .WaitAndRetryAsync(10, x => TimeSpan.FromSeconds(Math.Pow(2, x)))
                 .ExecuteAsync(() => request.GetAsync());
 
         private static bool HandleContinuation(IFlurlRequest request, HttpResponseMessage response)

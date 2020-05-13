@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using Flurl.Http;
@@ -40,6 +41,7 @@ namespace MigrateWorkItems
                         Uri = ex.Call.Request.RequestUri,
                         Method = ex.Call.Request.Method,
                         Body = ex.Call.RequestBody,
+                        StatusCode = ex.Call.Response.StatusCode,
                         Response = ex.Call.Response?.Content != null 
                                 ? await ex.Call?.Response?.Content?.ReadAsStringAsync()
                                 : string.Empty
@@ -62,11 +64,14 @@ namespace MigrateWorkItems
         public string Body { get; set; }
         public string Response { get; set; }
         public HttpMethod Method { get; set; }
+        public HttpStatusCode StatusCode { get; set; }
 
         public override string ToString() => new StringBuilder()
             .AppendLine(Message)
             .AppendLine()
             .AppendLine($"{Method} {Uri}")
+            .AppendLine()
+            .AppendLine(StatusCode.ToString())
             .AppendLine()
             .AppendLine(Body)
             .AppendLine()
