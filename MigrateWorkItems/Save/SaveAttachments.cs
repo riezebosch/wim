@@ -15,7 +15,6 @@ namespace MigrateWorkItems.Save
 
     public class SaveAttachments : ISaveAttachments
     {
-        private static readonly object Mutex = new object();
         private readonly IClient _client;
         private readonly DirectoryInfo _target;
 
@@ -31,12 +30,9 @@ namespace MigrateWorkItems.Save
             foreach (var attachment in FindAttachments(update))
             {
                 var path = Path.Join(_target.FullName, attachment.Id.ToString());
-                lock (Mutex)
+                if (File.Exists(path))
                 {
-                    if (File.Exists(path))
-                    {
-                        continue;
-                    }
+                    continue;
                 }
 
                 await using var stream = await _client.GetAsync(new UriRequest<Stream>(attachment.Url, "5.1"));

@@ -23,10 +23,9 @@ namespace MigrateWorkItems
             foreach (var attachment in query)
             {
                 await using var stream = File.OpenRead(Path.Join(output, "attachments", attachment.Id.ToString()));
-                var result = await client.PostAsync(
-                    new Request<AttachmentReference>($"{organization}/{project}/_apis/wit/attachments", "5.1")
-                        .WithQueryParams(("fileName", attachment.FileName)),
-                    stream);
+                var request = new Request<AttachmentReference>($"{organization}/{project}/_apis/wit/attachments", "5.1")
+                    .WithQueryParams(("fileName", attachment.FileName));
+                var result = await client.PostAsync(request, stream);
 
                 attachment.Url = result.Url;
                 context.Attachments.Update(attachment);

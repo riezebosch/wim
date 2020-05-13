@@ -64,6 +64,9 @@ namespace MigrateWorkItems.Console
                 Write($"[{position}/{total}] {(start.Elapsed / position * (total - position)).Humanize()} remaining");
             }
 
+            WriteLine();
+            WriteLine($"Done in {start.Elapsed.Humanize()}");
+            
             try
             {
                 start.Restart();
@@ -81,7 +84,8 @@ namespace MigrateWorkItems.Console
                 await context.SaveChangesAsync();
             }
 
-            WriteLine("Done.");
+            WriteLine();
+            WriteLine($"Done in {start.Elapsed.Humanize()}");
         }
 
         private static void AddCloneCommand(CommandLineApplication app)
@@ -108,7 +112,7 @@ namespace MigrateWorkItems.Console
                     await foreach (var (totalItems, totalAttachments) in Clone.Run(organization.Value(), token.Value(), areaPaths.Values, output.Value()))
                     {
                         SetCursorPosition(0, CursorTop);
-                        Write($"{totalItems} work items and {totalAttachments} attachments");
+                        Write($"{totalItems} work item updates and {totalAttachments} attachments");
                     }
                 });
             });

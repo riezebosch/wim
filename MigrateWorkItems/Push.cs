@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using Flurl.Http;
 using MigrateWorkItems.Model;
 
@@ -32,20 +35,41 @@ namespace MigrateWorkItems
                 }
                 catch (FlurlHttpException ex)
                 {
-                    System.Console.WriteLine(ex.Call.Request.RequestUri.ToString());
-                    System.Console.WriteLine(ex.Call.RequestBody);
-
-                    if (ex.Call.Response?.Content != null)
+                    throw new MigrationException($"Exception on work item {update.WorkItemId} with update {update.Id}")
                     {
-                        System.Console.WriteLine(await ex.Call.Response.Content.ReadAsStringAsync());
-                    }
-
-                    throw;
+                        Uri = ex.Call.Request.RequestUri,
+                        Method = ex.Call.Request.Method,
+                        Body = ex.Call.RequestBody,
+                        Response = ex.Call.Response?.Content != null 
+                                ? await ex.Call?.Response?.Content?.ReadAsStringAsync()
+                                : string.Empty
+                    };
                 }
 
                 await context.SaveChangesAsync();
                 yield return (++position, total);
             }
         }
+    }
+
+    public class MigrationException : Exception
+    {
+        public MigrationException(string message) : base(message)
+        {
+        }
+
+        public Uri Uri { get; set; }
+        public string Body { get; set; }
+        public string Response { get; set; }
+        public HttpMethod Method { get; set; }
+
+        public override string ToString() => new StringBuilder()
+            .AppendLine(Message)
+            .AppendLine()
+            .AppendLine($"{Method} {Uri}")
+            .AppendLine()
+            .AppendLine(Body)
+            .AppendLine()
+            .AppendLine(Response).ToString();
     }
 }
