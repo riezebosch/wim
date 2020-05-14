@@ -61,7 +61,7 @@ namespace MigrateWorkItems.Console
             await foreach (var (position, total) in AttachmentsProcessor.UploadAttachments(client, organization, project, context, output))
             {
                 SetCursorPosition(0, CursorTop);
-                Write($"[{position}/{total}] {(start.Elapsed / position * (total - position)).Humanize()} remaining");
+                Write($"[{position}/{total}] {(start.Elapsed / position * (total - position)).Humanize(2)} remaining");
             }
 
             WriteLine();
@@ -76,7 +76,7 @@ namespace MigrateWorkItems.Console
                 await foreach (var (position, total) in Push.Run(organization, project, output, context, processor))
                 {
                     SetCursorPosition(0, CursorTop);
-                    Write($"[{position}/{total}] {(start.Elapsed / position * (total - position)).Humanize()} remaining");
+                    Write($"[{position}/{total}] {(start.Elapsed / position * (total - position)).Humanize(2)} remaining");
                 }
             }
             finally

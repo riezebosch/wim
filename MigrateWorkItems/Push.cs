@@ -68,13 +68,13 @@ namespace MigrateWorkItems
 
         public override string ToString() => new StringBuilder()
             .AppendLine(Message)
-            .AppendLine()
+            .AppendLine("=== Operation:")
             .AppendLine($"{Method} {Uri}")
-            .AppendLine()
-            .AppendLine(StatusCode.ToString())
-            .AppendLine()
+            .AppendLine("=== Body:")
             .AppendLine(Body)
-            .AppendLine()
+            .AppendLine("=== Status code:")
+            .AppendLine($"{(int)StatusCode}, {StatusCode}")
+            .AppendLine("=== Response:")
             .AppendLine(Response).ToString();
     }
 }
