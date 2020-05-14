@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AzureDevOpsRest;
+using AzureDevOpsRest.Requests;
 using MigrateWorkItems.Data;
 using Newtonsoft.Json.Linq;
 

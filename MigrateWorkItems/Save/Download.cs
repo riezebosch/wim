@@ -19,7 +19,7 @@ namespace MigrateWorkItems.Save
         {
             await foreach (var item in QueryAllWorkItems(organization, areas))
             {
-                await foreach (var update in _client.GetAsync(new UriRequest<JToken>(new Uri(item.Url + "/updates"), "5.1").AsEnumerable()))
+                await foreach (var update in _client.GetAsync(new UriRequest<JToken>(new Uri(item.Url + "/updates"), "5.1").AsTopSkipEnumerable()))
                 {
                     yield return update;
                 }

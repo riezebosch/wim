@@ -1,7 +1,6 @@
 using System;
-using AzureDevOpsRest.Requests;
 
-namespace MigrateWorkItems
+namespace AzureDevOpsRest.Requests
 {
     public class UriRequest<TData> : Request<TData>
     {

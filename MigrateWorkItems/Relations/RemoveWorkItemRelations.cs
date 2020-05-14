@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using AzureDevOpsRest;
 using AzureDevOpsRest.Data.WorkItems;
+using AzureDevOpsRest.Requests;
 using Microsoft.AspNetCore.JsonPatch;
 using MigrateWorkItems.Data;
 
