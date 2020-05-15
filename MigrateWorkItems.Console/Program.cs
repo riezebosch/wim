@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using AzureDevOpsRest;
 using Humanizer;
@@ -61,7 +62,7 @@ namespace MigrateWorkItems.Console
             await foreach (var (position, total) in AttachmentsProcessor.UploadAttachments(client, organization, project, context, output))
             {
                 SetCursorPosition(0, CursorTop);
-                Write($"[{position}/{total}] {(start.Elapsed / position * (total - position)).Humanize(2)} remaining");
+                Write($"[{position}/{total}] {(start.Elapsed / position * (total - position)).Humanize(2)} remaining".PadRight(BufferWidth-1));
             }
 
             WriteLine();
@@ -76,7 +77,7 @@ namespace MigrateWorkItems.Console
                 await foreach (var (position, total) in Push.Run(organization, project, output, context, processor))
                 {
                     SetCursorPosition(0, CursorTop);
-                    Write($"[{position}/{total}] {(start.Elapsed / position * (total - position)).Humanize(2)} remaining");
+                    Write($"[{position}/{total}] {(start.Elapsed / position * (total - position)).Humanize(2)} remaining".PadRight(BufferWidth-1));
                 }
             }
             finally
@@ -108,12 +109,13 @@ namespace MigrateWorkItems.Console
                 
                 cmd.OnExecuteAsync(async c =>
                 {
-                    WriteLine("Downloading work item updates and attachments...");
-                    await foreach (var (totalItems, totalAttachments) in Clone.Run(organization.Value(), token.Value(), areaPaths.Values, output.Value()))
+                    var progress = new Progress<Clone.Progress>();
+                    progress.ProgressChanged += (_, p) =>
                     {
                         SetCursorPosition(0, CursorTop);
-                        Write($"{totalItems} work item updates and {totalAttachments} attachments");
-                    }
+                        Write($"Downloaded {p.Updates} work item updates and {p.Attachments} attachments...".PadRight(BufferWidth-1));
+                    };
+                    await Clone.Run(organization.Value(), token.Value(), areaPaths.Values, output.Value(), progress);
                 });
             });
             

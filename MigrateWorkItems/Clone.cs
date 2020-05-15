@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,8 +15,8 @@ namespace MigrateWorkItems
 {
     public static class Clone
     {
-        public static async IAsyncEnumerable<(int totalItems, int totalAttachments)> Run(string organization,
-            string token, IEnumerable<string> areas, string output)
+        public static async Task Run(string organization,
+            string token, IEnumerable<string> areas, string output, IProgress<Progress> progress)
         {
             var dir = Directory.CreateDirectory(output);
             var client = new Client(token);
@@ -46,7 +47,7 @@ namespace MigrateWorkItems
                     await context.SaveChangesAsync();
                 }
             
-                yield return (totalItems, totalAttachments);
+                progress.Report(new Progress { Updates = totalItems, Attachments = totalAttachments });
             }
 
             await context.SaveChangesAsync();
@@ -74,5 +75,11 @@ namespace MigrateWorkItems
 
         private static WorkItemUpdate Deserialize(string content) => 
             JsonConvert.DeserializeObject<WorkItemUpdate>(content, new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()});
+        
+        public class Progress
+        {
+            public int Updates { get; set; }
+            public int Attachments { get; set; }
+        }
     }
 }
